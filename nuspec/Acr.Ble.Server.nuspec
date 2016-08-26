@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Acr.Ble.Server</id>
+        <version>0.0.1</version>
+        <title>ACR BLE/Gatt Server Plugin for Xamarin and Windows</title>
+        <summary>Xplat Bluetooth LE Gatt Server</summary>
+        <description>
+PCL support for bluetooth low energy (BLE) gatt server
+        </description>
+        <authors>Allan Ritchie</authors>
+        <owners>Allan Ritchie</owners>
+        <licenseUrl>https://github.com/aritchie/bluetooth/LICENSE.md</licenseUrl>
+        <projectUrl>https://github.com/aritchie/bluetooth</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <tags>ios android xamarin xam.pcl ble bluetooth</tags>
+        <dependencies>
+            <dependency id="rx-main" version="[1, 2)" />
+        </dependencies>
+        <releaseNotes>
+1.0.0
+Initial Release
+        </releaseNotes>
+    </metadata>
+    <files>
+        <!-- PCL -->
+        <file src="..\Acr.Ble.Server\bin\Release\Acr.Ble.Server.*" target="lib\portable-win+net45+wp8+win8+wpa81" />
+
+        <!-- android -->
+        <file src="..\Acr.Ble.Server.Android\bin\Release\Acr.Ble.Server.*" target="lib\MonoAndroid10" />
+
+        <!-- ios -->
+        <file src="..\Acr.Ble.Server.iOS\bin\iPhone\Release\Acr.Ble.Server.*" target="lib\Xamarin.iOS10" />
+
+        <!-- uwp -->
+        <file src="..\Acr.Ble.Server.Uwp\bin\Release\Acr.Ble.Server.*" target="lib\uap10.0" />
+    </files>
+</package>

@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:acr="clr-namespace:Acr.XamForms;assembly=Acr.XamForms"
+             xmlns:local="clr-namespace:Samples.Converters;assembly=Samples"
+             x:Class="Samples.Pages.Server.SetupPage"
+             Title="BLE Server">
+
+    <TabbedPage.Resources>
+        <ResourceDictionary>
+            <local:InverseBooleanConverter x:Key="Inverse" />
+        </ResourceDictionary>
+    </TabbedPage.Resources>
+
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Text="{Binding StateText}" Command="{Binding ToggleServer}" />
+    </TabbedPage.ToolbarItems>
+
+    <TabbedPage.Children>
+        <ContentPage Title="Advertising">
+            <TableView Intent="Form">
+                <TableRoot>
+                    <TableSection>
+                        <EntryCell Label="Local Name" Text="{Binding LocalName}" IsEnabled="{Binding IsAdvertising, Converter={StaticResource Inverse}}" />
+                        <SwitchCell Text="TX Power" On="{Binding IncludeTxPower}" IsEnabled="{Binding IsAdvertising, Converter={StaticResource Inverse}}" />
+                        <SwitchCell Text="Device Name" On="{Binding IncludeDeviceName}" IsEnabled="{Binding IsAdvertising, Converter={StaticResource Inverse}}" />
+                        <SwitchCell Text="Connectable" On="{Binding IsConnectable}" IsEnabled="{Binding IsAdvertising, Converter={StaticResource Inverse}}" />
+                    </TableSection>
+                </TableRoot>
+            </TableView>
+        </ContentPage>
+
+        <ContentPage Title="Characteristics">
+            <acr:ListView ItemsSource="{Binding Characteristics}" ItemClickCommand="{Binding Action}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout>
+                                    <Label Text="{Binding Uuid, StringFormat='UUID: {0}'}" />
+                                    <Label Text="{Binding IsSubscribed, StringFormat='Subscribed: {0}'}" />
+                                    <Label Text="{Binding Value, StringFormat='Value: {0}'}" />
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </acr:ListView>
+        </ContentPage>
+
+        <ContentPage Title="New Characteristic" BindingContext="{Binding AddViewModel}">
+            <TableView Intent="Form">
+                <TableRoot>
+                    <TableSection Title="Advertising">
+                        <EntryCell Label="Local Name" Text="{Binding LocalName}" />
+                        <EntryCell Label="ID" Text="{Binding Uuid}" />
+                        <TextCell Text="Generate Random UUID" Command="{Binding GenerateRandom}" />
+                    </TableSection>
+
+                    <TableSection Title="Permissions">
+                        <SwitchCell Text="Writeable" On="{Binding CanWrite}" />
+                        <SwitchCell Text="Readable" On="{Binding CanRead}" />
+                        <SwitchCell Text="Notifications" On="{Binding CanNotify}" />
+                    </TableSection>
+
+                    <TableSection>
+                        <TextCell Text="Create Characteristic" Command="{Binding Create}" />
+                    </TableSection>
+                </TableRoot>
+            </TableView>
+        </ContentPage>
+
+    </TabbedPage.Children>
+</TabbedPage>
