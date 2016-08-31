@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<acr:ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:acr="clr-namespace:Acr.XamForms;assembly=Acr.XamForms"
+             x:Class="Samples.Pages.BeaconAdvertisementPage">
+
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="UUID" />
+            <Entry Text="{Binding Uuid}" />
+
+            <Label Text="Major" />
+            <Entry Text="{Binding Major}" Keyboard="Numeric" />
+
+            <Label Text="Minor" />
+            <Entry Text="{Binding Minor}" Keyboard="Numeric" />
+
+            <Button Text="Start Advertising" BackgroundColor="Lime" TextColor="Black" Command="{Binding StartAdvertising}" />
+            <Button Text="Stop Advertising" BackgroundColor="Red" TextColor="White" Command="{Binding StopAdvertising}" />
+        </StackLayout>
+    </ContentPage.Content>
+</acr:ContentPage>
