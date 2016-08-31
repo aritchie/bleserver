@@ -5,7 +5,7 @@ namespace Acr.Ble.Server
 {
     public interface IReadRequest
     {
-        // TODO: device?
-        void Reply(byte[] value);
+        int Offset { get; }
+        byte[] Value { get; set; }
     }
 }

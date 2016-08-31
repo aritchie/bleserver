@@ -61,44 +61,49 @@ namespace Acr.Ble.Server
         }
 
 
-        IObservable<byte[]> writeOb;
-        public override IObservable<byte[]> WhenWriteReceived()
+        IObservable<IWriteRequest> writeOb;
+        public override IObservable<IWriteRequest> WhenWriteReceived()
         {
-            this.writeOb = this.writeOb ?? Observable.Create<byte[]>(ob =>
+            this.writeOb = this.writeOb ?? Observable.Create<IWriteRequest>(ob =>
             {
                 var handler = new EventHandler<CBATTRequestsEventArgs>((sender, args) =>
                 {
-                    // TODO: comes in as multiple requests... yay
+                    foreach (var native in args.Requests)
+                    {
+                        var request = new WriteRequest(native);
+                        ob.OnNext(request);
+                    }
                 });
                 this.manager.WriteRequestsReceived += handler;
                 return () => this.manager.WriteRequestsReceived -= handler;;
             })
             .Publish()
             .RefCount();
+
             return this.writeOb;
         }
 
 
-        IObservable<byte[]> readOb;
-        public override IObservable<byte[]> WhenReadReceived()
+        IObservable<IReadRequest> readOb;
+        public override IObservable<IReadRequest> WhenReadReceived()
         {
-            this.readOb = this.readOb ?? Observable.Create<byte[]>(ob =>
+            this.readOb = this.readOb ?? Observable.Create<IReadRequest>(ob =>
             {
                 var handler = new EventHandler<CBATTRequestEventArgs>((sender, args) =>
                 {
                     if (args.Request.Characteristic.Equals(this.Native))
                     {
-                        //args.Request.Central.MaximumUpdateValueLength
-                        //args.Request.Offset = 0;
-                        //args.Request.Value = null;
+                        var request = new ReadRequest(args.Request);
+                        ob.OnNext(request);
                     }
                 });
                 this.manager.ReadRequestReceived += handler;
-                return () => this.manager.ReadRequestReceived -= handler;;
+                return () => this.manager.ReadRequestReceived -= handler;
             })
             .Publish()
             .RefCount();
-            return this.writeOb;
+
+            return this.readOb;
         }
 
 

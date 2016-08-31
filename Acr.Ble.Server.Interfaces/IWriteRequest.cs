@@ -5,8 +5,8 @@ namespace Acr.Ble.Server
 {
     public interface IWriteRequest
     {
+        int Offset { get; }
         bool IsReplyNeeded { get; }
-        byte[] IncomingValue { get; }
-        // TODO: reply?  device?
+        byte[] Value { get; }
     }
 }

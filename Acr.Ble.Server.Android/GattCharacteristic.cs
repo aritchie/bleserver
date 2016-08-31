@@ -14,8 +14,7 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid uuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions,
-                                  byte[] value) : base(service, uuid, properties, value)
+                                  CharacteristicPermissions permissions) : base(service, uuid, properties)
         {
             this.callbacks = callbacks;
 
@@ -39,13 +38,13 @@ namespace Acr.Ble.Server
         }
 
 
-        public override IObservable<byte[]> WhenWriteReceived()
+        public override IObservable<IWriteRequest> WhenWriteReceived()
         {
             throw new NotImplementedException();
         }
 
 
-        public override IObservable<byte[]> WhenReadReceived()
+        public override IObservable<IReadRequest> WhenReadReceived()
         {
             throw new NotImplementedException();
         }

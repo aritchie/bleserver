@@ -22,8 +22,6 @@ namespace Acr.Ble.Server
         void Broadcast(byte[] value);
 
         IObservable<bool> WhenSubscriptionStateChanged();
-
-        // TODO: response needed (write & writewithresponse)
         IObservable<IWriteRequest> WhenWriteReceived();
         IObservable<IReadRequest> WhenReadReceived();
     }

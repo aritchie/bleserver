@@ -28,7 +28,7 @@ namespace Acr.Ble.Server.Internals
         }
 
 
-        public override void OnDescriptorReadRequest(BluetoothDevice device, 
+        public override void OnDescriptorReadRequest(BluetoothDevice device,
                                                      int requestId, int offset, BluetoothGattDescriptor descriptor)
         {
             base.OnDescriptorReadRequest(device, requestId, offset, descriptor);

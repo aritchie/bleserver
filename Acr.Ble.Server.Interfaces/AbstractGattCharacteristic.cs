@@ -10,12 +10,11 @@ namespace Acr.Ble.Server
         readonly IList<IGattDescriptor> internalList;
 
 
-        protected AbstractGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties, byte[] value)
+        protected AbstractGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties)
         {
             this.Service = service;
             this.Uuid = characteristicUuid;
             this.Properties = properties;
-            this.Value = value;
 
             this.internalList = new List<IGattDescriptor>();
             this.Descriptors = new ReadOnlyCollection<IGattDescriptor>(this.internalList);
@@ -26,7 +25,6 @@ namespace Acr.Ble.Server
 
         public Guid Uuid { get; }
         public CharacteristicProperties Properties { get; }
-        public byte[] Value { get; set; }
         public IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
 
