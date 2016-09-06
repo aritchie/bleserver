@@ -15,7 +15,7 @@ namespace Acr.Ble.Server
         //bool IsSubscribed { get; }
         //int Subscribers { get; } <- better
 
-        IGattDescriptor AddDescriptor(Guid uuid, byte[] initialValue);
+        IGattDescriptor AddDescriptor(Guid uuid);
         void RemoveDescriptor(IGattDescriptor descriptor);
         IReadOnlyList<IGattDescriptor> Descriptors { get; }
 

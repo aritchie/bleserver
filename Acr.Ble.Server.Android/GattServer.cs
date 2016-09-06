@@ -48,7 +48,7 @@ namespace Acr.Ble.Server
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
-            var service = new GattService(this, uuid, primary);
+            var service = new GattService(this.callbacks, this, uuid, primary);
             this.server?.AddService(service.Native);
             return service;
         }

@@ -8,7 +8,7 @@ namespace Acr.Ble.Server
     {
         public GattServer()
         {
-            throw new ArgumentException("This is the PCL library of Acr.Ble.Server.  Did you include the nuget package in your platform project?");
+            throw new ArgumentException("");
         }
 
 

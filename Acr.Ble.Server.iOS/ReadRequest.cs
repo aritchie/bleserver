@@ -8,10 +8,12 @@ namespace Acr.Ble.Server
     public class ReadRequest : IReadRequest
     {
         readonly CBATTRequest request;
+        readonly CBPeripheralManager manager;
 
 
-        public ReadRequest(CBATTRequest request)
+        public ReadRequest(CBPeripheralManager manager, CBATTRequest request)
         {
+            this.manager = manager;
             this.request = request;
         }
 
@@ -21,7 +23,11 @@ namespace Acr.Ble.Server
         public byte[] Value
         {
             get { return this.request.Value.ToArray(); }
-            set { this.request.Value = NSData.FromArray(value); }
+            set
+            {
+                this.request.Value = NSData.FromArray(value);
+                this.manager.RespondToRequest(this.request, CBATTError.Success);
+            }
         }
     }
 }

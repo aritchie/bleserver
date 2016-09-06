@@ -15,11 +15,16 @@ namespace Acr.Ble.Server
         void ClearServices();
         IReadOnlyList<IGattService> Services { get; }
 
+
+        //IGattService CreateService();
+        //IGattCharacteristic CreateCharacteristic();
+        //IGattDescriptor CreateDescriptor();
+
         // IObservable<bool> WhenRunningStateChanged();
         // IEnumerable<IDevice> GetConnectedDevices();
         // Observable<IDevice, bool> WhenDeviceConnectedDisconnected()
-        // IObservable<IGattCharacteristic> WhenReadRequestReceived();
-        // IObservable<IGattCharacteristic, byte[]> WhenWriteRequestReceived();
+        // IObservable<IGattCharacteristic, IReadRequest> WhenReadRequestReceived();
+        // IObservable<IGattCharacteristic, IWriteRequest> WhenWriteRequestReceived();
         // IObservable<IGattCharacteristic, bool> WhenCharacteristicSubscriptionStateChanged();
     }
 }

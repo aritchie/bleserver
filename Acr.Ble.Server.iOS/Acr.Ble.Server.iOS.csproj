@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="GattCharacteristic.cs" />
+    <Compile Include="GattDescriptor.cs" />
     <Compile Include="GattServer.cs" />
     <Compile Include="GattService.cs" />
     <Compile Include="LePerhipheralManagerDelegate.cs" />

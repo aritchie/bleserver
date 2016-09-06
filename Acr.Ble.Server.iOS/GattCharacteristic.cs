@@ -16,15 +16,14 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid characteristicUuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions,
-                                  byte[] value) : base(service, characteristicUuid, properties, value)
+                                  CharacteristicPermissions permissions) : base(service, characteristicUuid, properties)
         {
             this.manager = manager;
 
             this.Native = new CBMutableCharacteristic(
                 CBUUID.FromBytes(characteristicUuid.ToByteArray()),
                 (CBCharacteristicProperties)(int)properties,
-                NSData.FromArray(value),
+                new NSData(),
                 (CBAttributePermissions)(int)permissions
             );
         }
@@ -93,7 +92,7 @@ namespace Acr.Ble.Server
                 {
                     if (args.Request.Characteristic.Equals(this.Native))
                     {
-                        var request = new ReadRequest(args.Request);
+                        var request = new ReadRequest(this.manager, args.Request);
                         ob.OnNext(request);
                     }
                 });
@@ -107,9 +106,8 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattDescriptor CreateNative(Guid uuid, byte[] initialValue)
+        protected override IGattDescriptor CreateNative(Guid uuid)
         {
-            throw new NotImplementedException();
         }
 
 
