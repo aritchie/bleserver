@@ -22,7 +22,7 @@ namespace Samples.ViewModels.Server
 		public SetupViewModel(ICoreServices services, AddCharacteristicViewModel addViewModel) : base(services)
 		{
 		    this.AddViewModel = addViewModel;
-            this.server = new GattServer();
+		    this.server = BleServerService.Factory.CreateInstance();
 		    this.service = this.server.AddService(Guid.NewGuid(), true);
 
 		    this.WhenAnyValue(x => x.IsAdvertising)

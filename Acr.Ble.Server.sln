@@ -35,7 +35,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acr.Ble.Server.iOS", "Acr.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acr.Ble.Server.Uwp", "Acr.Ble.Server.Uwp\Acr.Ble.Server.Uwp.csproj", "{C820A5C2-4323-459F-8DB6-98FCF2051B17}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Acr.Ble.Server.Shared", "Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.shproj", "{DDE53660-94A9-474E-9788-8C86305FADD2}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems*{61470aac-e055-44d8-a649-2e0cfd8c28bd}*SharedItemsImports = 4
+		Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems*{be07d63b-c90d-4fcf-9391-001d2406ce45}*SharedItemsImports = 4
+		Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems*{c820a5c2-4323-459f-8db6-98fcf2051b17}*SharedItemsImports = 4
+		Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems*{dde53660-94a9-474e-9788-8c86305fadd2}*SharedItemsImports = 13
+		Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems*{e84a8278-60cc-4b21-8326-b1a0ec3d1801}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|ARM = Ad-Hoc|ARM

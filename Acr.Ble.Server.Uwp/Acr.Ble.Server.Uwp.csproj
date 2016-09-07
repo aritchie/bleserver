@@ -117,6 +117,7 @@
       <Name>Acr.Ble.Server.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -48,6 +48,7 @@
     <Compile Include="IGattCharacteristic.cs" />
     <Compile Include="IGattDescriptor.cs" />
     <Compile Include="IGattServer.cs" />
+    <Compile Include="IGattServerFactory.cs" />
     <Compile Include="IGattService.cs" />
     <Compile Include="IReadRequest.cs" />
     <Compile Include="IWriteRequest.cs" />
