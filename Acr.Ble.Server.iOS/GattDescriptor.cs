@@ -9,13 +9,13 @@ namespace Acr.Ble.Server
         {
         }
 
-        public override IObservable<object> WhenReadReceived()
+        public override IObservable<IReadRequest> WhenReadReceived()
         {
             throw new NotImplementedException();
         }
 
 
-        public override IObservable<byte[]> WhenWriteReceived()
+        public override IObservable<IWriteRequest> WhenWriteReceived()
         {
             throw new NotImplementedException();
         }

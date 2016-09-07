@@ -1,10 +1,9 @@
 ﻿using System;
-using Xamarin.Forms;
 
 
 namespace Samples.Pages.Server
 {
-    public partial class BeaconAdvertisementPage : ContentPage
+    public partial class BeaconAdvertisementPage : Acr.XamForms.ContentPage
     {
         public BeaconAdvertisementPage()
         {

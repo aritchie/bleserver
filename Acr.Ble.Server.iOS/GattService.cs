@@ -36,7 +36,7 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattCharacteristic CreateCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions, byte[] initialValue)
+        protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
             return null;
         }

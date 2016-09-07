@@ -3,7 +3,7 @@
 
 namespace Acr.Ble.Server
 {
-    public abstract class AbstractGattDescriptor : IGattDescriptor
+    public abstract class  AbstractGattDescriptor : IGattDescriptor
     {
         protected AbstractGattDescriptor(IGattCharacteristic characteristic, Guid descriptorUuid)
         {
@@ -15,7 +15,7 @@ namespace Acr.Ble.Server
         public IGattCharacteristic Characteristic { get; }
         public Guid Uuid { get; }
 
-        public abstract IObservable<object> WhenReadReceived();
-        public abstract IObservable<byte[]> WhenWriteReceived();
+        public abstract IObservable<IReadRequest> WhenReadReceived();
+        public abstract IObservable<IWriteRequest> WhenWriteReceived();
     }
 }

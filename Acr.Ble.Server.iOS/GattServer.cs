@@ -59,7 +59,8 @@ namespace Acr.Ble.Server
 
         protected override void RemoveNative(IGattService service)
         {
-            //this.manager.RemoveService();
+            var native = ((GattService)service).Native;
+            this.manager.RemoveService(native);
         }
 
 
