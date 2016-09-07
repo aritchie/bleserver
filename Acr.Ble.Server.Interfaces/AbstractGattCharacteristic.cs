@@ -28,9 +28,9 @@ namespace Acr.Ble.Server
         public IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
 
-        public IGattDescriptor AddDescriptor(Guid uuid, byte[] initialValue)
+        public IGattDescriptor AddDescriptor(Guid uuid)
         {
-            var native = this.CreateNative(uuid, initialValue);
+            var native = this.CreateNative(uuid);
             this.internalList.Add(native);
             return native;
         }
@@ -49,7 +49,7 @@ namespace Acr.Ble.Server
         public abstract IObservable<IReadRequest> WhenReadReceived();
 
 
-        protected abstract IGattDescriptor CreateNative(Guid uuid, byte[] initialValue);
+        protected abstract IGattDescriptor CreateNative(Guid uuid);
         protected abstract void RemoveNative(IGattDescriptor descriptor);
     }
 }

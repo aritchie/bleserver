@@ -12,9 +12,8 @@ namespace Acr.Ble.Server
 
         public GattDescriptor(GattServerCallbacks callbacks,
                              IGattCharacteristic characteristic,
-                             Guid descriptorUuid,
-                             byte[] value)
-            : base(characteristic, descriptorUuid, value)
+                             Guid descriptorUuid)
+            : base(characteristic, descriptorUuid)
         {
             this.callbacks = callbacks;
 

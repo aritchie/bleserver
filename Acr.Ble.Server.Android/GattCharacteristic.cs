@@ -50,7 +50,7 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattDescriptor CreateNative(Guid uuid, byte[] initialValue)
+        protected override IGattDescriptor CreateNative(Guid uuid)
         {
             throw new NotImplementedException();
         }

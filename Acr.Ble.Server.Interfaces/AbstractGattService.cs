@@ -24,9 +24,9 @@ namespace Acr.Ble.Server
         public bool IsPrimary { get; }
 
 
-        public virtual IGattCharacteristic AddCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions, byte[] initialValue = null)
+        public virtual IGattCharacteristic AddCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
-            var characteristic = this.CreateCharacteristic(uuid, properties, permissions, initialValue);
+            var characteristic = this.CreateNative(uuid, properties, permissions);
             this.internalList.Add(characteristic);
             return characteristic;
         }
@@ -42,6 +42,6 @@ namespace Acr.Ble.Server
         public IReadOnlyList<IGattCharacteristic> Characteristics { get; }
 
 
-        protected abstract IGattCharacteristic CreateCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions, byte[] initialValue);
+        protected abstract IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions);
     }
 }

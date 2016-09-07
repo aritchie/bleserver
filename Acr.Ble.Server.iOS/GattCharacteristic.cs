@@ -108,6 +108,7 @@ namespace Acr.Ble.Server
 
         protected override IGattDescriptor CreateNative(Guid uuid)
         {
+            return new GattDescriptor(this, uuid);
         }
 
 

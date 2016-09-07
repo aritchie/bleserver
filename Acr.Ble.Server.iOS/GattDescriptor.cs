@@ -5,7 +5,7 @@ namespace Acr.Ble.Server
 {
     public class GattDescriptor : AbstractGattDescriptor
     {
-        public GattDescriptor(IGattCharacteristic characteristic, Guid descriptorUuid, byte[] value) : base(characteristic, descriptorUuid, value)
+        public GattDescriptor(IGattCharacteristic characteristic, Guid descriptorUuid) : base(characteristic, descriptorUuid)
         {
         }
 
@@ -13,6 +13,7 @@ namespace Acr.Ble.Server
         {
             throw new NotImplementedException();
         }
+
 
         public override IObservable<byte[]> WhenWriteReceived()
         {

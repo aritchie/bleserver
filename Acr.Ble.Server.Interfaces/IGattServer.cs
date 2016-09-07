@@ -10,8 +10,8 @@ namespace Acr.Ble.Server
         void Start(AdvertisementData adData);
         void Stop();
 
+
         IGattService AddService(Guid uuid, bool primary);
-        void RemoveService(IGattService service);
         void ClearServices();
         IReadOnlyList<IGattService> Services { get; }
 
