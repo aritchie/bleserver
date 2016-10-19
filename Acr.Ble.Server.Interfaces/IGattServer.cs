@@ -12,6 +12,7 @@ namespace Acr.Ble.Server
 
 
         IGattService AddService(Guid uuid, bool primary);
+        void RemoveService(Guid serviceUuid);
         void ClearServices();
         IReadOnlyList<IGattService> Services { get; }
 

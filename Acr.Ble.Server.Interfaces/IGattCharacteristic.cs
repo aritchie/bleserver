@@ -16,7 +16,6 @@ namespace Acr.Ble.Server
         //int Subscribers { get; } <- better
 
         IGattDescriptor AddDescriptor(Guid uuid);
-        void RemoveDescriptor(IGattDescriptor descriptor);
         IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
         void Broadcast(byte[] value);
@@ -24,5 +23,7 @@ namespace Acr.Ble.Server
         IObservable<bool> WhenSubscriptionStateChanged();
         IObservable<IWriteRequest> WhenWriteReceived();
         IObservable<IReadRequest> WhenReadReceived();
+
+        //this.Native.SubscribedCentrals - Get subscribers?
     }
 }

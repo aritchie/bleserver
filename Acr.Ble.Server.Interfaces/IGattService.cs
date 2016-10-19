@@ -12,7 +12,6 @@ namespace Acr.Ble.Server
         bool IsPrimary { get; }
 
         IGattCharacteristic AddCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions);
-        void RemoveCharacteristic(IGattCharacteristic characteristic);
         IReadOnlyList<IGattCharacteristic> Characteristics { get; }
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Acr;
 using Autofac;
+using Samples.Pages.Server;
 using Samples.Services;
+using Samples.ViewModels;
 using Samples.ViewModels.Server;
 using Xamarin.Forms;
 
@@ -18,9 +20,20 @@ namespace Samples
         {
             this.container = container;
 
-            this.MainPage = container
-                .Resolve<IViewModelManager>()
-                .CreatePage<SetupViewModel>();
+            this.MainPage = new TabbedPage
+            {
+                Children =
+                {
+                    new EasyServerPage
+                    {
+                        BindingContext = this.container.Resolve<EasyServerViewModel>()
+                    },
+                    new BeaconAdvertisementPage
+                    {
+                        BindingContext = this.container.Resolve<BeaconAdvertisementViewModel>()
+                    }
+                }
+            };
         }
 
 

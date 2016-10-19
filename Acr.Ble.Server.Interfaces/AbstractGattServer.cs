@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 
 namespace Acr.Ble.Server
@@ -53,10 +54,14 @@ namespace Acr.Ble.Server
         }
 
 
-        public void RemoveService(IGattService service)
+        public void RemoveService(Guid serviceUuid)
         {
-            this.RemoveNative(service);
-            this.internalList.Remove(service);
+            var service = this.Services.FirstOrDefault(x => x.Uuid.Equals(serviceUuid));
+            if (service != null)
+            {
+                this.RemoveNative(service);
+                this.internalList.Remove(service);
+            }
         }
 
 

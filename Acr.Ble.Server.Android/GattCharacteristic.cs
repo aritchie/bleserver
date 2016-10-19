@@ -54,11 +54,5 @@ namespace Acr.Ble.Server
         {
             throw new NotImplementedException();
         }
-
-
-        protected override void RemoveNative(IGattDescriptor descriptor)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

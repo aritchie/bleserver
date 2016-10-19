@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 
 namespace Acr.Ble.Server
@@ -32,16 +33,8 @@ namespace Acr.Ble.Server
         }
 
 
-        public virtual void RemoveCharacteristic(IGattCharacteristic characteristic)
-        {
-            this.internalList.Remove(characteristic);
-        }
-
-
         readonly IList<IGattCharacteristic> internalList;
         public IReadOnlyList<IGattCharacteristic> Characteristics { get; }
-
-
         protected abstract IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions);
     }
 }

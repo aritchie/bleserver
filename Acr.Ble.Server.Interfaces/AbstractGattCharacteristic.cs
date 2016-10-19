@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 
 namespace Acr.Ble.Server
@@ -36,20 +37,11 @@ namespace Acr.Ble.Server
         }
 
 
-        public void RemoveDescriptor(IGattDescriptor descriptor)
-        {
-            this.RemoveNative(descriptor);
-            this.internalList.Remove(descriptor);
-        }
-
-
         public abstract void Broadcast(byte[] value);
         public abstract IObservable<bool> WhenSubscriptionStateChanged();
         public abstract IObservable<IWriteRequest> WhenWriteReceived();
         public abstract IObservable<IReadRequest> WhenReadReceived();
 
-
         protected abstract IGattDescriptor CreateNative(Guid uuid);
-        protected abstract void RemoveNative(IGattDescriptor descriptor);
     }
 }

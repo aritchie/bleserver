@@ -3,6 +3,7 @@
 
 namespace Acr.Ble.Server
 {
+    [Flags]
     public enum CharacteristicProperties
     {
         Broadcast = 1, //0x1

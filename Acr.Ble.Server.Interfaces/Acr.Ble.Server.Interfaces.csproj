@@ -44,7 +44,6 @@
     <Compile Include="CharacteristicPermissions.cs" />
     <Compile Include="AdvertisementData.cs" />
     <Compile Include="CharacteristicProperties.cs" />
-    <Compile Include="IDevice.cs" />
     <Compile Include="IGattCharacteristic.cs" />
     <Compile Include="IGattDescriptor.cs" />
     <Compile Include="IGattServer.cs" />

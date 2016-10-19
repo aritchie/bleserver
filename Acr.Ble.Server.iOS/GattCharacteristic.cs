@@ -21,7 +21,7 @@ namespace Acr.Ble.Server
             this.manager = manager;
 
             this.Native = new CBMutableCharacteristic(
-                CBUUID.FromBytes(characteristicUuid.ToByteArray()),
+                characteristicUuid.ToCBUuid(),
                 (CBCharacteristicProperties)(int)properties,
                 new NSData(),
                 (CBAttributePermissions)(int)permissions
@@ -69,8 +69,11 @@ namespace Acr.Ble.Server
                 {
                     foreach (var native in args.Requests)
                     {
-                        var request = new WriteRequest(native);
-                        ob.OnNext(request);
+                        if (native.Characteristic.Equals(this.Native))
+                        {
+                            var request = new WriteRequest(native);
+                            ob.OnNext(request);
+                        }
                     }
                 });
                 this.manager.WriteRequestsReceived += handler;
@@ -108,13 +111,7 @@ namespace Acr.Ble.Server
 
         protected override IGattDescriptor CreateNative(Guid uuid)
         {
-            return new GattDescriptor(this, uuid);
-        }
-
-
-        protected override void RemoveNative(IGattDescriptor descriptor)
-        {
-            throw new NotImplementedException();
+            return new GattDescriptor(this, uuid, this.manager);
         }
 
 
