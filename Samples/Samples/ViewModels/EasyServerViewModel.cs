@@ -33,7 +33,7 @@ namespace Samples.ViewModels
                 CharacteristicPermissions.Readable
             );
 
-            var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
+            //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
 
             notifyCharacteristic.WhenSubscriptionStateChanged().Subscribe(subscribed =>
             {
@@ -69,14 +69,14 @@ namespace Samples.ViewModels
                 this.OnEvent($"Characteristic Write Received - {write}");
             });
 
-            descriptor.WhenReadReceived().Subscribe(x =>
-                this.OnEvent("Descriptor Read Received")
-            );
-            descriptor.WhenWriteReceived().Subscribe(x =>
-            {
-                var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
-                this.OnEvent($"Descriptor Write Received - {write}");
-            });
+            //descriptor.WhenReadReceived().Subscribe(x =>
+            //    this.OnEvent("Descriptor Read Received")
+            //);
+            //descriptor.WhenWriteReceived().Subscribe(x =>
+            //{
+            //    var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
+            //    this.OnEvent($"Descriptor Write Received - {write}");
+            //});
 
             this.ToggleServer = new Command(() =>
             {

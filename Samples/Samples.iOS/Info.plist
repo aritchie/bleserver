@@ -58,5 +58,7 @@
 	</array>
 	<key>CFBundleName</key>
 	<string>Bluetooth Samples</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>I use bluetooth!</string>
 </dict>
 </plist>

@@ -22,24 +22,24 @@ namespace Samples
                 .SingleInstance();
 
             builder
-                .Register(x => Settings.Local.Bind<AppSettingsImpl>())
+                .Register(_ => Settings.Local.Bind<AppSettingsImpl>())
                 .As<IAppSettings>()
                 .SingleInstance();
 
             builder
-                .Register(x => Notifications.Instance)
+                .Register(_ => Notifications.Instance)
                 .As<INotifications>()
                 .SingleInstance();
 
             builder
-                .Register(x => UserDialogs.Instance)
+                .Register(_ => UserDialogs.Instance)
                 .As<IUserDialogs>()
                 .SingleInstance();
 
-            //builder
-            //    .Register(x => BeaconManager.Instance)
-            //    .As<IBeaconManager>()
-            //    .SingleInstance();
+            builder
+                .Register(_ => BleServerService.Factory)
+                .As<IGattServerFactory>()
+                .SingleInstance();
 
             builder
                 .RegisterType<CoreServicesImpl>()

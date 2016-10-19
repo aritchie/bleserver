@@ -8,15 +8,7 @@ namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
-        readonly CBPeripheralManager manager;
-
-        public GattServer()
-        {
-            this.manager = new CBPeripheralManager(
-                new LePerhipheralManagerDelegate(),
-                DispatchQueue.DefaultGlobalQueue
-            );
-        }
+        readonly CBPeripheralManager manager = new CBPeripheralManager();
 
 
         public override bool IsRunning => this.manager.Advertising;

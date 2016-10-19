@@ -5,7 +5,6 @@ using Autofac;
 using Samples.Pages.Server;
 using Samples.Services;
 using Samples.ViewModels;
-using Samples.ViewModels.Server;
 using Xamarin.Forms;
 
 
@@ -20,20 +19,23 @@ namespace Samples
         {
             this.container = container;
 
-            this.MainPage = new TabbedPage
+            this.MainPage = new NavigationPage(new TabbedPage
             {
+                Title = "BLE Server",
                 Children =
                 {
                     new EasyServerPage
                     {
+                        Title = "Quick Server",
                         BindingContext = this.container.Resolve<EasyServerViewModel>()
                     },
                     new BeaconAdvertisementPage
                     {
+                        Title = "Beacon Ads",
                         BindingContext = this.container.Resolve<BeaconAdvertisementViewModel>()
                     }
                 }
-            };
+            });
         }
 
 
