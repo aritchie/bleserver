@@ -7,15 +7,15 @@ namespace Acr.Ble.Server
 {
     public class GattDescriptor : AbstractGattDescriptor
     {
-        readonly GattServerCallbacks callbacks;
+        readonly GattContext context;
 
 
-        public GattDescriptor(GattServerCallbacks callbacks,
-                             IGattCharacteristic characteristic,
-                             Guid descriptorUuid)
+        public GattDescriptor(GattContext context,
+                              IGattCharacteristic characteristic,
+                              Guid descriptorUuid)
             : base(characteristic, descriptorUuid)
         {
-            this.callbacks = callbacks;
+            this.context = context;
 
             this.Native = new BluetoothGattDescriptor(
                 descriptorUuid.ToUuid(),

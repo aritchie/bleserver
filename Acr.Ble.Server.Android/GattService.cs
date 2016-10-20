@@ -9,12 +9,12 @@ namespace Acr.Ble.Server
     public class GattService : AbstractGattService
     {
         public BluetoothGattService Native { get; }
-        readonly GattServerCallbacks callbacks;
+        readonly GattContext context;
 
 
-        public GattService(GattServerCallbacks callbacks, IGattServer server, Guid uuid, bool primary) : base(server, uuid, primary)
+        public GattService(GattContext context, IGattServer server, Guid uuid, bool primary) : base(server, uuid, primary)
         {
-            this.callbacks = callbacks;
+            this.context = context;
             this.Native = new BluetoothGattService(
                 UUID.FromString(uuid.ToString()),
                 primary ? GattServiceType.Primary : GattServiceType.Secondary
@@ -24,7 +24,7 @@ namespace Acr.Ble.Server
 
         protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
-            return new GattCharacteristic(this.callbacks, this, uuid, properties, permissions);
+            return new GattCharacteristic(this.context, this, uuid, properties, permissions);
         }
     }
 }

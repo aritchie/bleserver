@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
 
@@ -8,16 +9,16 @@ namespace Acr.Ble.Server
     public class GattCharacteristic : AbstractGattCharacteristic
     {
         public BluetoothGattCharacteristic Native { get; }
-        readonly GattServerCallbacks callbacks;
+        readonly GattContext context;
 
-        public GattCharacteristic(GattServerCallbacks callbacks,
+
+        public GattCharacteristic(GattContext context,
                                   IGattService service,
                                   Guid uuid,
                                   CharacteristicProperties properties,
                                   CharacteristicPermissions permissions) : base(service, uuid, properties)
         {
-            this.callbacks = callbacks;
-
+            this.context = context;
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 (GattProperty) (int) properties,
@@ -28,31 +29,43 @@ namespace Acr.Ble.Server
 
         public override void Broadcast(byte[] value)
         {
-            throw new NotImplementedException();
+            this.Native.SetValue(value);
+
+            // TODO: request response true/false
+            this.context.Server.NotifyCharacteristicChanged(null, this.Native, true);
         }
 
 
         public override IObservable<bool> WhenSubscriptionStateChanged()
         {
-            throw new NotImplementedException();
+            return Observable.Create<bool>(ob =>
+            {
+                return () => { };
+            });
         }
 
 
         public override IObservable<IWriteRequest> WhenWriteReceived()
         {
-            throw new NotImplementedException();
+            return Observable.Create<IWriteRequest>(ob =>
+            {
+                return () => { };
+            });
         }
 
 
         public override IObservable<IReadRequest> WhenReadReceived()
         {
-            throw new NotImplementedException();
+            return Observable.Create<IReadRequest>(ob =>
+            {
+                return () => { };
+            });
         }
 
 
         protected override IGattDescriptor CreateNative(Guid uuid)
         {
-            throw new NotImplementedException();
+            return new GattDescriptor(this.context, this, uuid);
         }
     }
 }

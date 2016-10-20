@@ -7,15 +7,17 @@ namespace Acr.Ble.Server.Internals
     public class GattServerCallbacks : BluetoothGattServerCallback
     {
 
+        public event EventHandler<CharacteristicReadEventArgs> CharacteristicRead;
         public override void OnCharacteristicReadRequest(BluetoothDevice device,
                                                          int requestId,
                                                          int offset,
                                                          BluetoothGattCharacteristic characteristic)
         {
-            base.OnCharacteristicReadRequest(device, requestId, offset, characteristic);
+            this.CharacteristicRead?.Invoke(this, new CharacteristicReadEventArgs(device, characteristic, requestId, offset));
         }
 
 
+        public event EventHandler<CharacteristicWriteEventArgs> CharacteristicWrite;
         public override void OnCharacteristicWriteRequest(BluetoothDevice device,
                                                           int requestId,
                                                           BluetoothGattCharacteristic characteristic,
@@ -24,27 +26,34 @@ namespace Acr.Ble.Server.Internals
                                                           int offset,
                                                           byte[] value)
         {
-            base.OnCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+            this.CharacteristicWrite?.Invoke(this, new CharacteristicWriteEventArgs(characteristic, device, requestId, offset, preparedWrite, responseNeeded, value));
         }
 
 
-        public override void OnDescriptorReadRequest(BluetoothDevice device,
-                                                     int requestId, int offset, BluetoothGattDescriptor descriptor)
+        public event EventHandler<DescriptorReadEventArgs> DescriptorRead;
+        public override void OnDescriptorReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattDescriptor descriptor)
         {
-            base.OnDescriptorReadRequest(device, requestId, offset, descriptor);
+            this.DescriptorRead?.Invoke(this, new DescriptorReadEventArgs(descriptor, device, requestId, offset));
         }
 
 
-        public override void OnDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor descriptor,
-                                                      bool preparedWrite, bool responseNeeded, int offset, byte[] value)
+        public event EventHandler<DescriptorWriteEventArgs> DescriptorWrite;
+        public override void OnDescriptorWriteRequest(BluetoothDevice device,
+                                                      int requestId,
+                                                      BluetoothGattDescriptor descriptor,
+                                                      bool preparedWrite,
+                                                      bool responseNeeded,
+                                                      int offset,
+                                                      byte[] value)
         {
-            base.OnDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
+            this.DescriptorWrite?.Invoke(this, new DescriptorWriteEventArgs(descriptor, device, requestId, offset, preparedWrite, responseNeeded, value));
         }
 
 
+        public event EventHandler<ConnectionStateChangeEventArgs> ConnectionStateChanged;
         public override void OnConnectionStateChange(BluetoothDevice device, ProfileState status, ProfileState newState)
         {
-            base.OnConnectionStateChange(device, status, newState);
+            this.ConnectionStateChanged?.Invoke(this, new ConnectionStateChangeEventArgs(device, status, newState));
         }
 
 
@@ -54,10 +63,11 @@ namespace Acr.Ble.Server.Internals
         //}
 
 
-        //public override void OnMtuChanged(BluetoothDevice device, int mtu)
-        //{
-        //    base.OnMtuChanged(device, mtu);
-        //}
+        public event EventHandler<MtuChangedEventArgs> MtuChanged;
+        public override void OnMtuChanged(BluetoothDevice device, int mtu)
+        {
+            this.MtuChanged?.Invoke(this, new MtuChangedEventArgs(device, mtu));
+        }
 
 
         //public override void OnNotificationSent(BluetoothDevice device, GattStatus status)
