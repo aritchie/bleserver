@@ -13,78 +13,19 @@ namespace Samples.ViewModels
 {
     public class EasyServerViewModel : AbstractRootViewModel
     {
-        readonly IGattServer server;
+        readonly IGattServerFactory factory;
+        IGattServer server;
         IDisposable notifyBroadcast;
 
 
         public EasyServerViewModel(ICoreServices services, IGattServerFactory factory) : base(services)
         {
-            this.server = factory.CreateInstance();
-            var service = this.server.AddService(Guid.NewGuid(), true);
-            this.OnEvent($"Service Added - {service.Uuid}");
-
-            var characteristic = service.AddCharacteristic(
-                Guid.NewGuid(),
-                CharacteristicProperties.Read | CharacteristicProperties.Write,
-                CharacteristicPermissions.Writeable
-            );
-            this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
-
-            var notifyCharacteristic = service.AddCharacteristic
-            (
-                Guid.NewGuid(),
-                CharacteristicProperties.Notify,
-                CharacteristicPermissions.Readable
-            );
-            this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
-
-            //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
-
-            notifyCharacteristic.WhenSubscriptionStateChanged().Subscribe(subscribed =>
-            {
-                this.OnEvent($"Characteristic Subscription State: {subscribed}");
-
-                if (!subscribed)
-                {
-                    this.notifyBroadcast?.Dispose();
-                    this.notifyBroadcast = null;
-                }
-                else if (this.notifyBroadcast == null)
-                {
-                    this.OnEvent("Characteristic Broadcast Started");
-                    this.notifyBroadcast = Observable
-                        .Interval(TimeSpan.FromSeconds(1))
-                        .Subscribe(_ =>
-                        {
-                            var dt = DateTime.Now.ToString("g");
-                            var bytes = Encoding.UTF8.GetBytes(dt);
-                            notifyCharacteristic.Broadcast(bytes);
-                        });
-                }
-            });
-
-            characteristic.WhenReadReceived().Subscribe(x =>
-            {
-                this.OnEvent("Characteristic Read Received");
-                x.Value = Encoding.UTF8.GetBytes(this.CharacteristicValue);
-            });
-            characteristic.WhenWriteReceived().Subscribe(x =>
-            {
-                var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
-                this.OnEvent($"Characteristic Write Received - {write}");
-            });
-
-            //descriptor.WhenReadReceived().Subscribe(x =>
-            //    this.OnEvent("Descriptor Read Received")
-            //);
-            //descriptor.WhenWriteReceived().Subscribe(x =>
-            //{
-            //    var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
-            //    this.OnEvent($"Descriptor Write Received - {write}");
-            //});
+            this.factory = factory;
 
             this.ToggleServer = new Command(() =>
             {
+                this.BuildServer();
+
                 if (this.server.IsRunning)
                 {
                     this.ServerText = "Start Server";
@@ -93,6 +34,7 @@ namespace Samples.ViewModels
                 }
                 else
                 {
+                    
                     this.ServerText = "Stop Server";
                     this.server.Start(new AdvertisementData 
                     {
@@ -111,6 +53,84 @@ namespace Samples.ViewModels
         [Reactive] public string Output { get; private set; }
         public ICommand ToggleServer { get; }
         public ICommand Clear { get; }
+
+
+        void BuildServer()
+        {
+            if (this.server != null)
+                return;
+
+            try
+            {
+                this.server = this.factory.CreateInstance();
+                var service = this.server.AddService(Guid.NewGuid(), true);
+                this.OnEvent($"Service Added - {service.Uuid}");
+
+                var characteristic = service.AddCharacteristic(
+                    Guid.NewGuid(),
+                    CharacteristicProperties.Read | CharacteristicProperties.Write,
+                    CharacteristicPermissions.Writeable
+                );
+                this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
+
+                var notifyCharacteristic = service.AddCharacteristic
+                (
+                    Guid.NewGuid(),
+                    CharacteristicProperties.Notify,
+                    CharacteristicPermissions.Readable
+                );
+                this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
+
+                //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
+
+                notifyCharacteristic.WhenSubscriptionStateChanged().Subscribe(subscribed =>
+                {
+                    this.OnEvent($"Characteristic Subscription State: {subscribed}");
+
+                    if (!subscribed)
+                    {
+                        this.notifyBroadcast?.Dispose();
+                        this.notifyBroadcast = null;
+                    }
+                    else if (this.notifyBroadcast == null)
+                    {
+                        this.OnEvent("Characteristic Broadcast Started");
+                        this.notifyBroadcast = Observable
+                            .Interval(TimeSpan.FromSeconds(1))
+                            .Subscribe(_ =>
+                        {
+                            var dt = DateTime.Now.ToString("g");
+                            var bytes = Encoding.UTF8.GetBytes(dt);
+                            notifyCharacteristic.Broadcast(bytes);
+                        });
+                    }
+                });
+
+                characteristic.WhenReadReceived().Subscribe(x =>
+                {
+                    this.OnEvent("Characteristic Read Received");
+                    x.Value = Encoding.UTF8.GetBytes(this.CharacteristicValue);
+                });
+                characteristic.WhenWriteReceived().Subscribe(x =>
+                {
+                    var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
+                    this.OnEvent($"Characteristic Write Received - {write}");
+                });
+
+                //descriptor.WhenReadReceived().Subscribe(x =>
+                //    this.OnEvent("Descriptor Read Received")
+                //);
+                //descriptor.WhenWriteReceived().Subscribe(x =>
+                //{
+                //    var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
+                //    this.OnEvent($"Descriptor Write Received - {write}");
+                //});    
+            }
+            catch (Exception ex)
+            {
+                this.Dialogs.Alert("Error building gatt server - " + ex);
+            }
+        }
 
 
         void OnEvent(string msg)

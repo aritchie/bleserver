@@ -23,7 +23,6 @@ namespace Acr.Ble.Server
         {
             this.manager = (BluetoothManager)Application.Context.GetSystemService(Context.BluetoothService);
             this.adCallbacks = new AdvertisementCallbacks();
-            this.callbacks = new GattServerCallbacks();
         }
 
 
@@ -48,7 +47,8 @@ namespace Acr.Ble.Server
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
-            var service = new GattService(this.callbacks, this, uuid, primary);
+            //var service = new GattService(this, this, uuid, primary);
+            var service  = new GattService(null, this, uuid, primary); // TODO: GattContext before server :P
             this.server?.AddService(service.Native);
             return service;
         }
