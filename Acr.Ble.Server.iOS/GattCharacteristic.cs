@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
 using Foundation;
@@ -111,7 +113,11 @@ namespace Acr.Ble.Server
 
         protected override IGattDescriptor CreateNative(Guid uuid)
         {
-            return new GattDescriptor(this, uuid, this.manager);
+            var descriptor = new GattDescriptor(this, uuid, this.manager);
+            var list = new List<CBDescriptor>(this.Native.Descriptors.ToList());
+            list.Add(descriptor.Native);
+            this.Native.Descriptors = list.ToArray();
+            return descriptor;
         }
 
 

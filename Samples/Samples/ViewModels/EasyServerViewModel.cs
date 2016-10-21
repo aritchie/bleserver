@@ -21,17 +21,22 @@ namespace Samples.ViewModels
         {
             this.server = factory.CreateInstance();
             var service = this.server.AddService(Guid.NewGuid(), true);
+            this.OnEvent($"Service Added - {service.Uuid}");
+
             var characteristic = service.AddCharacteristic(
                 Guid.NewGuid(),
                 CharacteristicProperties.Read | CharacteristicProperties.Write,
                 CharacteristicPermissions.Writeable
             );
+            this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
+
             var notifyCharacteristic = service.AddCharacteristic
             (
                 Guid.NewGuid(),
                 CharacteristicProperties.Notify,
                 CharacteristicPermissions.Readable
             );
+            this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
 
             //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
 
@@ -84,11 +89,16 @@ namespace Samples.ViewModels
                 {
                     this.ServerText = "Start Server";
                     this.server.Stop();
+                    this.OnEvent("Server Stopped");
                 }
                 else
                 {
                     this.ServerText = "Stop Server";
-                    this.server.Start(new AdvertisementData());
+                    this.server.Start(new AdvertisementData 
+                    {
+                        LocalName = "Allan"
+                    });
+                    this.OnEvent("Server Started");
                 }
             });
             this.Clear = new Command(() => this.Output = String.Empty);

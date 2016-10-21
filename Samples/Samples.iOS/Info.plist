@@ -26,10 +26,8 @@
 	</array>
 	<key>MinimumOSVersion</key>
 	<string>9.2</string>
-	<key>CFBundleDisplayName</key>
-	<string>Bluetooth Samples</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.acrapps.bluetoothsamples</string>
+	<string>com.acrapps.blesampleserver</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleIconFiles</key>
@@ -56,9 +54,9 @@
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 	</array>
-	<key>CFBundleName</key>
-	<string>Bluetooth Samples</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>I use bluetooth!</string>
+	<key>CFBundleName</key>
+	<string>BLE Server</string>
 </dict>
 </plist>

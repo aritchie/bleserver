@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CoreBluetooth;
 
 
@@ -19,7 +21,12 @@ namespace Acr.Ble.Server
 
         protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
-            return new GattCharacteristic(this.manager, this, uuid, properties, permissions);
+            var characteristic = new GattCharacteristic(this.manager, this, uuid, properties, permissions);
+            var list = new List<CBCharacteristic>(this.Native.Characteristics.ToList());
+            list.Add(characteristic.Native);
+            this.Native.Characteristics = list.ToArray();
+
+            return characteristic;
         }
     }
 }
