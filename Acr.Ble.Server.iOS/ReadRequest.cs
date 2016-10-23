@@ -18,6 +18,7 @@ namespace Acr.Ble.Server
         }
 
 
+        public IDevice Device { get; internal set; }
         public int Offset => (int)this.request.Offset;
 
         public byte[] Value
@@ -25,8 +26,8 @@ namespace Acr.Ble.Server
             get { return this.request.Value.ToArray(); }
             set
             {
-                this.request.Value = NSData.FromArray(value);
-                this.manager.RespondToRequest(this.request, CBATTError.Success);
+                //this.request.Value = NSData.FromArray(value);
+                //this.manager.RespondToRequest(this.request, CBATTError.Success);
             }
         }
     }

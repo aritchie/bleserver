@@ -15,6 +15,7 @@ namespace Acr.Ble.Server
         }
 
 
+        public IDevice Device { get; }
         public int Offset => (int) this.request.Offset;
         public bool IsReplyNeeded { get; } = true;
         public byte[] Value => this.request.Value.ToArray();

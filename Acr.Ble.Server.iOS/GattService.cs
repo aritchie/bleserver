@@ -22,7 +22,10 @@ namespace Acr.Ble.Server
         protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
             var characteristic = new GattCharacteristic(this.manager, this, uuid, properties, permissions);
-            var list = new List<CBCharacteristic>(this.Native.Characteristics.ToList());
+            var list = new List<CBCharacteristic>();
+            if (this.Native.Characteristics != null)
+                list.AddRange(this.Native.Characteristics);
+            
             list.Add(characteristic.Native);
             this.Native.Characteristics = list.ToArray();
 

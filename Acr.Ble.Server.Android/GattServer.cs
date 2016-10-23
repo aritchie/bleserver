@@ -15,7 +15,7 @@ namespace Acr.Ble.Server
     {
         readonly BluetoothManager manager;
         readonly AdvertisementCallbacks adCallbacks;
-        readonly GattServerCallbacks callbacks;
+        readonly GattContext context;
         BluetoothGattServer server;
 
 
@@ -23,6 +23,7 @@ namespace Acr.Ble.Server
         {
             this.manager = (BluetoothManager)Application.Context.GetSystemService(Context.BluetoothService);
             this.adCallbacks = new AdvertisementCallbacks();
+            this.context = new GattContext();
         }
 
 
@@ -108,7 +109,8 @@ namespace Acr.Ble.Server
 
         protected virtual void StartGatt()
         {
-            this.server = this.manager.OpenGattServer(Application.Context, this.callbacks);
+            this.server = this.manager.OpenGattServer(Application.Context, this.context.Callbacks);
+            this.context.Server = this.server;
 
             foreach (var service in this.Services)
             {

@@ -7,5 +7,6 @@ namespace Acr.Ble.Server
     {
         int Offset { get; }
         byte[] Value { get; set; }
+        IDevice Device { get; }
     }
 }

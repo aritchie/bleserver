@@ -11,19 +11,17 @@ namespace Acr.Ble.Server
         // permissions
         Guid Uuid { get; }
         CharacteristicProperties Properties { get; }
-        //byte[] Value { get; set; }
-        //bool IsSubscribed { get; }
-        //int Subscribers { get; } <- better
+        CharacteristicPermissions Permissions { get; }
 
         IGattDescriptor AddDescriptor(Guid uuid);
         IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
-        void Broadcast(byte[] value);
+        void Broadcast(byte[] value, params IDevice[] devices);
+        void BroadcastToAll(byte[] value);
 
-        IObservable<bool> WhenSubscriptionStateChanged();
         IObservable<IWriteRequest> WhenWriteReceived();
         IObservable<IReadRequest> WhenReadReceived();
-
-        //this.Native.SubscribedCentrals - Get subscribers?
+        IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
+        IReadOnlyList<IDevice> SubscribedDevices { get; }
     }
 }

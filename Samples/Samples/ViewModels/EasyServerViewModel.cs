@@ -83,26 +83,29 @@ namespace Samples.ViewModels
 
                 //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
 
-                notifyCharacteristic.WhenSubscriptionStateChanged().Subscribe(subscribed =>
+                notifyCharacteristic.WhenDeviceSubscriptionChanged().Subscribe(e =>
                 {
-                    this.OnEvent($"Characteristic Subscription State: {subscribed}");
+                    var @event = e.IsSubscribed ? "Subscribed" : "Unsubcribed";
+                    this.OnEvent($"Device {e.Device.Uuid} {@event}");
+                    this.OnEvent($"Characteristic Subscribers: {notifyCharacteristic.SubscribedDevices.Count}");
 
-                    if (!subscribed)
+                    if (notifyCharacteristic.SubscribedDevices.Count == 0)
                     {
                         this.notifyBroadcast?.Dispose();
                         this.notifyBroadcast = null;
+                        this.OnEvent("No subcribers to characteristic");
                     }
                     else if (this.notifyBroadcast == null)
                     {
-                        this.OnEvent("Characteristic Broadcast Started");
+                        this.OnEvent("Starting Subscriber Thread");
                         this.notifyBroadcast = Observable
                             .Interval(TimeSpan.FromSeconds(1))
                             .Subscribe(_ =>
-                        {
-                            var dt = DateTime.Now.ToString("g");
-                            var bytes = Encoding.UTF8.GetBytes(dt);
-                            notifyCharacteristic.Broadcast(bytes);
-                        });
+                            {
+                                var dt = DateTime.Now.ToString("g");
+                                var bytes = Encoding.UTF8.GetBytes(dt);
+                                notifyCharacteristic.Broadcast(bytes);
+                            });
                     }
                 });
 

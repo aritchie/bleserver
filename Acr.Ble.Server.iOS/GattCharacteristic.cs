@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
 using Foundation;
@@ -10,7 +10,9 @@ namespace Acr.Ble.Server
 {
     public class GattCharacteristic : AbstractGattCharacteristic
     {
+        readonly ConcurrentDictionary<CBUUID, IDevice> devices;
         readonly CBPeripheralManager manager;
+
         public CBMutableCharacteristic Native { get; }
 
 
@@ -21,6 +23,7 @@ namespace Acr.Ble.Server
                                   CharacteristicPermissions permissions) : base(service, characteristicUuid, properties)
         {
             this.manager = manager;
+            this.devices = new ConcurrentDictionary<CBUUID, IDevice>();
 
             this.Native = new CBMutableCharacteristic(
                 characteristicUuid.ToCBUuid(),
@@ -114,7 +117,10 @@ namespace Acr.Ble.Server
         protected override IGattDescriptor CreateNative(Guid uuid)
         {
             var descriptor = new GattDescriptor(this, uuid, this.manager);
-            var list = new List<CBDescriptor>(this.Native.Descriptors.ToList());
+            var list = new List<CBDescriptor>();
+            if (this.Native.Descriptors != null)
+                list.AddRange(this.Native.Descriptors);
+
             list.Add(descriptor.Native);
             this.Native.Descriptors = list.ToArray();
             return descriptor;
@@ -125,6 +131,7 @@ namespace Acr.Ble.Server
         {
             return (sender, args) =>
             {
+                // on has a subcription or has none
                 ob.OnNext(subscribing);
             };
         }

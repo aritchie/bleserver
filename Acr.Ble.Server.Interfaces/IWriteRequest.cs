@@ -8,5 +8,6 @@ namespace Acr.Ble.Server
         int Offset { get; }
         bool IsReplyNeeded { get; }
         byte[] Value { get; }
+        IDevice Device { get; }
     }
 }

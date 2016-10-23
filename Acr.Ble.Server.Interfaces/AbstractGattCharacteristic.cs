@@ -1,46 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 
 namespace Acr.Ble.Server
 {
     public abstract class AbstractGattCharacteristic : IGattCharacteristic
     {
-        readonly IList<IGattDescriptor> internalList;
-
-
-        protected AbstractGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties)
+        protected AbstractGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
         {
             this.Service = service;
             this.Uuid = characteristicUuid;
             this.Properties = properties;
+            this.Permissions = permissions;
 
-            this.internalList = new List<IGattDescriptor>();
-            this.Descriptors = new ReadOnlyCollection<IGattDescriptor>(this.internalList);
+            this.InternalSubscribedDevices = new List<IDevice>();
+            this.SubscribedDevices = new ReadOnlyCollection<IDevice>(this.InternalSubscribedDevices);
+
+            this.InternalDescriptors = new List<IGattDescriptor>();
+            this.Descriptors = new ReadOnlyCollection<IGattDescriptor>(this.InternalDescriptors);
         }
 
 
-        public IGattService Service { get; }
+        protected IList<IDevice> InternalSubscribedDevices { get; }
+        protected IList<IGattDescriptor> InternalDescriptors { get; }
 
+
+        public IGattService Service { get; }
         public Guid Uuid { get; }
         public CharacteristicProperties Properties { get; }
+        public CharacteristicPermissions Permissions { get; }
         public IReadOnlyList<IGattDescriptor> Descriptors { get; }
+        public IReadOnlyList<IDevice> SubscribedDevices { get; }
 
 
         public IGattDescriptor AddDescriptor(Guid uuid)
         {
             var native = this.CreateNative(uuid);
-            this.internalList.Add(native);
+            this.InternalDescriptors.Add(native);
             return native;
         }
 
 
-        public abstract void Broadcast(byte[] value);
-        public abstract IObservable<bool> WhenSubscriptionStateChanged();
+        public abstract void Broadcast(byte[] value, params IDevice[] devices);
+        public abstract void BroadcastToAll(byte[] value);
         public abstract IObservable<IWriteRequest> WhenWriteReceived();
         public abstract IObservable<IReadRequest> WhenReadReceived();
+        public abstract IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
 
         protected abstract IGattDescriptor CreateNative(Guid uuid);
     }

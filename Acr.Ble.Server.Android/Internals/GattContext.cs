@@ -6,14 +6,13 @@ namespace Acr.Ble.Server.Internals
 {
     public class GattContext
     {
-        public GattContext(BluetoothGattServer server)
+        public GattContext()
         {
-            this.Server = server;
             this.Callbacks = new GattServerCallbacks();
         }
 
 
-        public BluetoothGattServer Server { get; }
+        public BluetoothGattServer Server { get; internal set; }
         public GattServerCallbacks Callbacks { get; }
     }
 }
