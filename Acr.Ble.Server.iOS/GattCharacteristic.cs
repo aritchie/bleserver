@@ -20,7 +20,7 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid characteristicUuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions) : base(service, characteristicUuid, properties)
+                                  CharacteristicPermissions permissions) : base(service, characteristicUuid, properties, permissions)
         {
             this.manager = manager;
             this.devices = new ConcurrentDictionary<CBUUID, IDevice>();
@@ -34,17 +34,23 @@ namespace Acr.Ble.Server
         }
 
 
-        public override void Broadcast(byte[] value)
+        public override void Broadcast(byte[] value, params IDevice[] devices)
         {
             var data = NSData.FromArray(value);
             this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
         }
 
 
-        IObservable<bool> subOb;
-        public override IObservable<bool> WhenSubscriptionStateChanged()
+        public override void BroadcastToAll(byte[] value)
         {
-            this.subOb = this.subOb ?? Observable.Create<bool>(ob =>
+            throw new NotImplementedException();
+        }
+
+
+        IObservable<DeviceSubscriptionEvent> subOb;
+        public override IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged()
+        {
+            this.subOb = this.subOb ?? Observable.Create<DeviceSubscriptionEvent>(ob =>
             {
                 var sub = this.CreateSubHandler(ob, true);
                 var unsub = this.CreateSubHandler(ob, false);
@@ -127,12 +133,13 @@ namespace Acr.Ble.Server
         }
 
 
-        protected virtual EventHandler<CBPeripheralManagerSubscriptionEventArgs> CreateSubHandler(IObserver<bool> ob, bool subscribing)
+        protected virtual EventHandler<CBPeripheralManagerSubscriptionEventArgs> CreateSubHandler(IObserver<DeviceSubscriptionEvent> ob, bool subscribing)
         {
             return (sender, args) =>
             {
                 // on has a subcription or has none
-                ob.OnNext(subscribing);
+                //ob.OnNext(subscribing);
+                ob.OnNext(new DeviceSubscriptionEvent(null, subscribing));
             };
         }
     }
