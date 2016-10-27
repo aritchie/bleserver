@@ -112,7 +112,7 @@ namespace Samples.ViewModels
                 characteristic.WhenReadReceived().Subscribe(x =>
                 {
                     this.OnEvent("Characteristic Read Received");
-                    x.Value = Encoding.UTF8.GetBytes(this.CharacteristicValue);
+                    x.ReEncoding.UTF8.GetBytes(this.CharacteristicValue);
                 });
                 characteristic.WhenWriteReceived().Subscribe(x =>
                 {

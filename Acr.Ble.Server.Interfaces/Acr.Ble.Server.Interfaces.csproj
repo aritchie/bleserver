@@ -49,8 +49,8 @@
     <Compile Include="IGattServer.cs" />
     <Compile Include="IGattServerFactory.cs" />
     <Compile Include="IGattService.cs" />
-    <Compile Include="IReadRequest.cs" />
-    <Compile Include="IWriteRequest.cs" />
+    <Compile Include="ReadRequest.cs" />
+    <Compile Include="WriteRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IDevice.cs" />
     <Compile Include="DeviceSubscriptionEvent.cs" />

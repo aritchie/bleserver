@@ -7,13 +7,11 @@ namespace Acr.Ble.Server
 {
     public class Device : IDevice
     {
-        readonly BluetoothDevice native;
         readonly Lazy<Guid> deviceUuidLazy;
 
 
         public Device(BluetoothDevice native)
         {
-            this.native = native;
             this.deviceUuidLazy = new Lazy<Guid>(() =>
             {
                 var deviceGuid = new byte[16];
@@ -25,12 +23,11 @@ namespace Acr.Ble.Server
                     .ToArray();
 
                 macBytes.CopyTo(deviceGuid, 10);
-                return new Guid(deviceGuid);                
+                return new Guid(deviceGuid);
             });
         }
 
 
-        public string Identifier => this.native.Name;
         public Guid Uuid => this.deviceUuidLazy.Value;
     }
 }

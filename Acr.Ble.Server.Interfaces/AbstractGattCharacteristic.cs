@@ -44,8 +44,8 @@ namespace Acr.Ble.Server
 
         public abstract void Broadcast(byte[] value, params IDevice[] devices);
         public abstract void BroadcastToAll(byte[] value);
-        public abstract IObservable<IWriteRequest> WhenWriteReceived();
-        public abstract IObservable<IReadRequest> WhenReadReceived();
+        public abstract IObservable<WriteRequest> WhenWriteReceived();
+        public abstract IObservable<ReadRequest> WhenReadReceived();
         public abstract IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
 
         protected abstract IGattDescriptor CreateNative(Guid uuid);

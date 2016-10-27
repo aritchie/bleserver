@@ -7,7 +7,7 @@ namespace Acr.Ble.Server
     {
         IGattCharacteristic Characteristic { get; }
         Guid Uuid { get; }
-        IObservable<IReadRequest> WhenReadReceived();
-        IObservable<IWriteRequest> WhenWriteReceived();
+        IObservable<ReadRequest> WhenReadReceived();
+        IObservable<WriteRequest> WhenWriteReceived();
     }
 }

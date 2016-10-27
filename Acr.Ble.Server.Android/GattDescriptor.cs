@@ -27,13 +27,13 @@ namespace Acr.Ble.Server
         public BluetoothGattDescriptor Native { get; }
 
 
-        public override IObservable<IReadRequest> WhenReadReceived()
+        public override IObservable<ReadRequest> WhenReadReceived()
         {
             throw new NotImplementedException();
         }
 
 
-        public override IObservable<IWriteRequest> WhenWriteReceived()
+        public override IObservable<WriteRequest> WhenWriteReceived()
         {
             throw new NotImplementedException();
         }

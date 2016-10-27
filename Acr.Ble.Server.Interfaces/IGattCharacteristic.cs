@@ -19,8 +19,8 @@ namespace Acr.Ble.Server
         void Broadcast(byte[] value, params IDevice[] devices);
         void BroadcastToAll(byte[] value);
 
-        IObservable<IWriteRequest> WhenWriteReceived();
-        IObservable<IReadRequest> WhenReadReceived();
+        IObservable<WriteRequest> WhenWriteReceived();
+        IObservable<ReadRequest> WhenReadReceived();
         IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
         IReadOnlyList<IDevice> SubscribedDevices { get; }
     }

@@ -73,23 +73,21 @@ namespace Acr.Ble.Server
 
                 this.context.Callbacks.DescriptorWrite += handler;
 
-                return () => 
-                { 
+                return () =>
+                {
                     this.context.Callbacks.DescriptorWrite -= handler;
                 };
             });
         }
 
 
-        public override IObservable<IWriteRequest> WhenWriteReceived()
+        public override IObservable<WriteRequest> WhenWriteReceived()
         {
-            return Observable.Create<IWriteRequest>(ob =>
+            return Observable.Create<WriteRequest>(ob =>
             {
-                var handler = new EventHandler<CharacteristicWriteEventArgs>((sender, args) => 
+                var handler = new EventHandler<CharacteristicWriteEventArgs>((sender, args) =>
                 {
-                    var request = new WriteRequest();
-                    request.Device = null;
-
+                    var request = new WriteRequest(null, args.Offset, args.ResponseNeeded);
                     ob.OnNext(request);
 
                     // TODO: exception if not reply set?
@@ -97,29 +95,45 @@ namespace Acr.Ble.Server
                     {
                         this.context.Server.SendResponse
                         (
-                            null, 
-                            args.RequestId, 
+                            args.Device,
+                            args.RequestId,
                             GattStatus.Success,
-                            request.Offset, 
+                            request.Offset,
                             request.Value
                         );
                     }
                 });
                 this.context.Callbacks.CharacteristicWrite += handler;
 
-                return () => 
-                { 
+                return () =>
+                {
                     this.context.Callbacks.CharacteristicWrite -= handler;
                 };
             });
         }
 
 
-        public override IObservable<IReadRequest> WhenReadReceived()
+        public override IObservable<ReadRequest> WhenReadReceived()
         {
-            return Observable.Create<IReadRequest>(ob =>
+            return Observable.Create<ReadRequest>(ob =>
             {
-                return () => { };
+                var handler = new EventHandler<CharacteristicReadEventArgs>((sender, args) =>
+                {
+                    var request = new ReadRequest(null);
+                    ob.OnNext(request);
+                    if (request.Value == null)
+                        return;
+
+                    this.context.Server.SendResponse(
+                        args.Device,
+                        args.RequestId,
+                        GattStatus.Success,
+                        args.Offset,
+                        request.Value
+                    );
+                };
+                this.context.Callbacks.CharacteristicRead += handler;
+                return () => this.context.Callbacks.CharacteristicRead -= handler;
             });
         }
 

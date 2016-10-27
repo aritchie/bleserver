@@ -71,10 +71,10 @@ namespace Acr.Ble.Server
         }
 
 
-        IObservable<IWriteRequest> writeOb;
-        public override IObservable<IWriteRequest> WhenWriteReceived()
+        IObservable<WriteRequest> writeOb;
+        public override IObservable<WriteRequest> WhenWriteReceived()
         {
-            this.writeOb = this.writeOb ?? Observable.Create<IWriteRequest>(ob =>
+            this.writeOb = this.writeOb ?? Observable.Create<WriteRequest>(ob =>
             {
                 var handler = new EventHandler<CBATTRequestsEventArgs>((sender, args) =>
                 {
@@ -82,7 +82,7 @@ namespace Acr.Ble.Server
                     {
                         if (native.Characteristic.Equals(this.Native))
                         {
-                            var request = new WriteRequest(native);
+                            var request = new WriteRequest(this.manager, native);
                             ob.OnNext(request);
                         }
                     }
@@ -97,17 +97,22 @@ namespace Acr.Ble.Server
         }
 
 
-        IObservable<IReadRequest> readOb;
-        public override IObservable<IReadRequest> WhenReadReceived()
+        IObservable<ReadRequest> readOb;
+        public override IObservable<ReadRequest> WhenReadReceived()
         {
-            this.readOb = this.readOb ?? Observable.Create<IReadRequest>(ob =>
+            this.readOb = this.readOb ?? Observable.Create<ReadRequest>(ob =>
             {
                 var handler = new EventHandler<CBATTRequestEventArgs>((sender, args) =>
                 {
                     if (args.Request.Characteristic.Equals(this.Native))
                     {
-                        var request = new ReadRequest(this.manager, args.Request);
+                        var request = new ReadRequest(null);
                         ob.OnNext(request);
+                        if (request.Value == null)
+                            return;
+
+                        args.Request.Value = NSData.FromArray(request.Value);
+                        this.manager.RespondToRequest(args.Request, CBATTError.Success);
                     }
                 });
                 this.manager.ReadRequestReceived += handler;

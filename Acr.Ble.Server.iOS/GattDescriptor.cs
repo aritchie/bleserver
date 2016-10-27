@@ -19,10 +19,10 @@ namespace Acr.Ble.Server
         }
 
 
-        IObservable<IReadRequest> readOb;
-        public override IObservable<IReadRequest> WhenReadReceived()
+        IObservable<ReadRequest> readOb;
+        public override IObservable<ReadRequest> WhenReadReceived()
         {
-            this.readOb = this.readOb ?? Observable.Create<IReadRequest>(ob =>
+            this.readOb = this.readOb ?? Observable.Create<ReadRequest>(ob =>
             {
                 return () => { };
             })
@@ -33,10 +33,10 @@ namespace Acr.Ble.Server
         }
 
 
-        IObservable<IWriteRequest> writeOb;
-        public override IObservable<IWriteRequest> WhenWriteReceived()
+        IObservable<WriteRequest> writeOb;
+        public override IObservable<WriteRequest> WhenWriteReceived()
         {
-            this.writeOb = this.writeOb ?? Observable.Create<IWriteRequest>(ob =>
+            this.writeOb = this.writeOb ?? Observable.Create<WriteRequest>(ob =>
             {
 
                 return () => { };
