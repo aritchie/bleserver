@@ -12,6 +12,7 @@ namespace Acr.Ble.Server
 
         public Device(BluetoothDevice native)
         {
+            this.Native = native;
             this.deviceUuidLazy = new Lazy<Guid>(() =>
             {
                 var deviceGuid = new byte[16];
@@ -28,6 +29,7 @@ namespace Acr.Ble.Server
         }
 
 
+        public BluetoothDevice Native { get; }
         public Guid Uuid => this.deviceUuidLazy.Value;
     }
 }

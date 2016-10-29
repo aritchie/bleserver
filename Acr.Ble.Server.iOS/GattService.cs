@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CoreBluetooth;
 
 
@@ -25,7 +24,7 @@ namespace Acr.Ble.Server
             var list = new List<CBCharacteristic>();
             if (this.Native.Characteristics != null)
                 list.AddRange(this.Native.Characteristics);
-            
+
             list.Add(characteristic.Native);
             this.Native.Characteristics = list.ToArray();
 

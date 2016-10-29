@@ -13,7 +13,7 @@ namespace Acr.Ble.Server
 
         public int Offset { get; }
         public byte[] Value { get; set; }
+        public GattStatus Status { get; set; } = GattStatus.Success;
         public IDevice Device { get; }
     }
 }
-// TODO: GATT reply status

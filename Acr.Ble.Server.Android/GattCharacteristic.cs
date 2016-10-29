@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
-using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
+using Java.Util;
+using DroidGattStatus = Android.Bluetooth.GattStatus;
+using Observable = System.Reactive.Linq.Observable;
 
 
 namespace Acr.Ble.Server
@@ -11,11 +13,12 @@ namespace Acr.Ble.Server
     public class GattCharacteristic : AbstractGattCharacteristic
     {
         public static readonly Guid NotifyDescriptorId = new Guid("00002902-0000-1000-8000-00805f9b34fb");
+        public static readonly UUID NotifyDescriptorUuid = Java.Util.UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
         public static readonly byte[] NotifyEnabledBytes = BluetoothGattDescriptor.EnableNotificationValue.ToArray();
 
         public BluetoothGattCharacteristic Native { get; }
         readonly GattContext context;
-        readonly IList<BluetoothDevice> subscribers = new List<BluetoothDevice>();
+        readonly ConcurrentDictionary<string, IDevice> subscribers;
         readonly BluetoothGattDescriptor subscribeDescriptor;
 
 
@@ -26,33 +29,36 @@ namespace Acr.Ble.Server
                                   CharacteristicPermissions permissions) : base(service, uuid, properties, permissions)
         {
             this.context = context;
-            // TODO: create the client config descriptor
+            this.subscribers = new ConcurrentDictionary<string, IDevice>();
+
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 (GattProperty) (int) properties,
                 GattPermission.Read | GattPermission.Write
             );
-            if (properties.HasFlag(CharacteristicProperties.Notify))
-            {
-                this.subscribeDescriptor = new BluetoothGattDescriptor(null, GattDescriptorPermission.Write);
-            }
+            this.subscribeDescriptor = new BluetoothGattDescriptor(
+                NotifyDescriptorId.ToUuid(),
+                GattDescriptorPermission.Write
+            );
         }
 
 
         public override void Broadcast(byte[] value, params IDevice[] devices)
         {
             this.Native.SetValue(value);
-
-            // TODO: request response true/false
-            //client that requests notifications/indications by writing to the "Client Configuration" descriptor for the given characteristic.
-            foreach (var dev in this.context.Server.ConnectedDevices)
-                this.context.Server.NotifyCharacteristicChanged(dev, this.Native, true);
+            devices
+                .Cast<Device>()
+                .Select(x => x.Native)
+                .ToList()
+                .ForEach(x => this.context.Server.NotifyCharacteristicChanged(x, this.Native, false));
         }
 
 
         public override void BroadcastToAll(byte[] value)
         {
-            throw new NotImplementedException();
+            this.Native.SetValue(value);
+            foreach (var dev in this.context.Server.ConnectedDevices)
+                this.context.Server.NotifyCharacteristicChanged(dev, this.Native, false);
         }
 
 
@@ -62,13 +68,20 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<DescriptorWriteEventArgs>((sender, args) =>
                 {
-                    //this.subscribers.Add(null);
-                    //if (this.subscribers.Count == 1)
-                    //    ob.OnNext(true); // has subscribers now
-
-                    //this.subscribers.Remove(null);
-                    //if (this.subscribers.Count == 0)
-                    //    ob.OnNext(false); // no subscribes
+                    if (args.Descriptor.Uuid.Equals(NotifyDescriptorUuid))
+                    {
+                        if (args.Value.Equals(NotifyEnabledBytes))
+                        {
+                            var device = this.subscribers.GetOrAdd(args.Device.Address, address => new Device(args.Device));
+                            ob.OnNext(new DeviceSubscriptionEvent(device, true));
+                        }
+                        else
+                        {
+                            IDevice device;
+                            if (this.subscribers.TryRemove(args.Device.Address, out device))
+                                ob.OnNext(new DeviceSubscriptionEvent(device, false));
+                        }
+                    }
                 });
 
                 this.context.Callbacks.DescriptorWrite += handler;
@@ -87,17 +100,19 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<CharacteristicWriteEventArgs>((sender, args) =>
                 {
-                    var request = new WriteRequest(null, args.Offset, args.ResponseNeeded);
+                    var device = new Device(args.Device);
+                    var request = new WriteRequest(device, args.Offset, args.ResponseNeeded);
                     ob.OnNext(request);
 
-                    // TODO: exception if not reply set?
                     if (request.IsReplyNeeded)
                     {
+                        var status = (DroidGattStatus) Enum.Parse(typeof(DroidGattStatus), request.Status.ToString());
+
                         this.context.Server.SendResponse
                         (
                             args.Device,
                             args.RequestId,
-                            GattStatus.Success,
+                            status,
                             request.Offset,
                             request.Value
                         );
@@ -105,10 +120,7 @@ namespace Acr.Ble.Server
                 });
                 this.context.Callbacks.CharacteristicWrite += handler;
 
-                return () =>
-                {
-                    this.context.Callbacks.CharacteristicWrite -= handler;
-                };
+                return () => this.context.Callbacks.CharacteristicWrite -= handler;
             });
         }
 
@@ -121,17 +133,15 @@ namespace Acr.Ble.Server
                 {
                     var request = new ReadRequest(null);
                     ob.OnNext(request);
-                    if (request.Value == null)
-                        return;
-
+                    var status = (DroidGattStatus)Enum.Parse(typeof(GattStatus), request.Status.ToString());
                     this.context.Server.SendResponse(
                         args.Device,
                         args.RequestId,
-                        GattStatus.Success,
+                        status,
                         args.Offset,
                         request.Value
                     );
-                };
+                });
                 this.context.Callbacks.CharacteristicRead += handler;
                 return () => this.context.Callbacks.CharacteristicRead -= handler;
             });

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
 using Foundation;
@@ -10,7 +11,7 @@ namespace Acr.Ble.Server
 {
     public class GattCharacteristic : AbstractGattCharacteristic
     {
-        readonly ConcurrentDictionary<CBUUID, IDevice> devices;
+        readonly ConcurrentDictionary<CBUUID, IDevice> subscribers;
         readonly CBPeripheralManager manager;
 
         public CBMutableCharacteristic Native { get; }
@@ -20,16 +21,17 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid characteristicUuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions) : base(service, characteristicUuid, properties, permissions)
+                                  CharacteristicPermissions permissions)
+            : base(service, characteristicUuid, properties, permissions)
         {
             this.manager = manager;
-            this.devices = new ConcurrentDictionary<CBUUID, IDevice>();
+            this.subscribers = new ConcurrentDictionary<CBUUID, IDevice>();
 
             this.Native = new CBMutableCharacteristic(
                 characteristicUuid.ToCBUuid(),
-                (CBCharacteristicProperties)(int)properties,
+                (CBCharacteristicProperties) (int) properties,
                 new NSData(),
-                (CBAttributePermissions)(int)permissions
+                (CBAttributePermissions) (int) permissions
             );
         }
 
@@ -37,17 +39,24 @@ namespace Acr.Ble.Server
         public override void Broadcast(byte[] value, params IDevice[] devices)
         {
             var data = NSData.FromArray(value);
-            this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
+            var centrals = devices
+                .Cast<Device>()
+                .Select(x => x.Central)
+                .ToArray();
+
+            this.manager.UpdateValue(data, this.Native, centrals);
         }
 
 
         public override void BroadcastToAll(byte[] value)
         {
-            throw new NotImplementedException();
+            var data = NSData.FromArray(value);
+            this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
         }
 
 
         IObservable<DeviceSubscriptionEvent> subOb;
+
         public override IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged()
         {
             this.subOb = this.subOb ?? Observable.Create<DeviceSubscriptionEvent>(ob =>
@@ -72,6 +81,7 @@ namespace Acr.Ble.Server
 
 
         IObservable<WriteRequest> writeOb;
+
         public override IObservable<WriteRequest> WhenWriteReceived()
         {
             this.writeOb = this.writeOb ?? Observable.Create<WriteRequest>(ob =>
@@ -82,13 +92,19 @@ namespace Acr.Ble.Server
                     {
                         if (native.Characteristic.Equals(this.Native))
                         {
-                            var request = new WriteRequest(this.manager, native);
+                            // TODO: is reply needed?
+                            var device = new Device(native.Central);
+                            var request = new WriteRequest(device, (int)native.Offset, false);
                             ob.OnNext(request);
+
+                            var status = (CBATTError)Enum.Parse(typeof(CBATTError), request.Status.ToString());
+                            this.manager.RespondToRequest(native, status);
                         }
                     }
                 });
                 this.manager.WriteRequestsReceived += handler;
-                return () => this.manager.WriteRequestsReceived -= handler;;
+                return () => this.manager.WriteRequestsReceived -= handler;
+                ;
             })
             .Publish()
             .RefCount();
@@ -98,6 +114,7 @@ namespace Acr.Ble.Server
 
 
         IObservable<ReadRequest> readOb;
+
         public override IObservable<ReadRequest> WhenReadReceived()
         {
             this.readOb = this.readOb ?? Observable.Create<ReadRequest>(ob =>
@@ -106,13 +123,13 @@ namespace Acr.Ble.Server
                 {
                     if (args.Request.Characteristic.Equals(this.Native))
                     {
-                        var request = new ReadRequest(null);
+                        var device = new Device(args.Request.Central);
+                        var request = new ReadRequest(device);
                         ob.OnNext(request);
-                        if (request.Value == null)
-                            return;
 
+                        var nativeStatus = (CBATTError) Enum.Parse(typeof(CBATTError), request.Status.ToString());
                         args.Request.Value = NSData.FromArray(request.Value);
-                        this.manager.RespondToRequest(args.Request, CBATTError.Success);
+                        this.manager.RespondToRequest(args.Request, nativeStatus);
                     }
                 });
                 this.manager.ReadRequestReceived += handler;
@@ -143,8 +160,17 @@ namespace Acr.Ble.Server
             return (sender, args) =>
             {
                 // on has a subcription or has none
-                //ob.OnNext(subscribing);
-                ob.OnNext(new DeviceSubscriptionEvent(null, subscribing));
+                if (subscribing)
+                {
+                    var device = this.subscribers.GetOrAdd(args.Central.UUID, uuid => new Device(args.Central));
+                    ob.OnNext(new DeviceSubscriptionEvent(device, true));
+                }
+                else
+                {
+                    IDevice device;
+                    if (this.subscribers.TryRemove(args.Central.UUID, out device))
+                        ob.OnNext(new DeviceSubscriptionEvent(device, false));
+                }
             };
         }
     }

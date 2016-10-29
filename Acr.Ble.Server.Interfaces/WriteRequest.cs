@@ -17,6 +17,6 @@ namespace Acr.Ble.Server
         public int Offset { get; }
         public bool IsReplyNeeded { get; }
         public byte[] Value { get; set; }
+        public GattStatus Status { get; set; } = GattStatus.Success;
     }
 }
-// TODO: GATT reply status

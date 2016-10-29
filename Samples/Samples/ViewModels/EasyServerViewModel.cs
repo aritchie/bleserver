@@ -34,9 +34,9 @@ namespace Samples.ViewModels
                 }
                 else
                 {
-                    
+
                     this.ServerText = "Stop Server";
-                    this.server.Start(new AdvertisementData 
+                    this.server.Start(new AdvertisementData
                     {
                         LocalName = "Allan"
                     });
@@ -111,8 +111,8 @@ namespace Samples.ViewModels
 
                 characteristic.WhenReadReceived().Subscribe(x =>
                 {
+                    x.Value = Encoding.UTF8.GetBytes(this.CharacteristicValue);
                     this.OnEvent("Characteristic Read Received");
-                    x.ReEncoding.UTF8.GetBytes(this.CharacteristicValue);
                 });
                 characteristic.WhenWriteReceived().Subscribe(x =>
                 {
@@ -127,7 +127,7 @@ namespace Samples.ViewModels
                 //{
                 //    var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
                 //    this.OnEvent($"Descriptor Write Received - {write}");
-                //});    
+                //});
             }
             catch (Exception ex)
             {
