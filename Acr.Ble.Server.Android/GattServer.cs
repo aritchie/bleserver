@@ -41,6 +41,7 @@ namespace Acr.Ble.Server
         public override void Stop()
         {
             this.manager.Adapter.BluetoothLeAdvertiser.StopAdvertising(this.adCallbacks);
+            this.context.Server = null;
             this.server?.Close();
             this.server = null;
         }
@@ -48,8 +49,7 @@ namespace Acr.Ble.Server
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
-            //var service = new GattService(this, this, uuid, primary);
-            var service  = new GattService(null, this, uuid, primary); // TODO: GattContext before server :P
+            var service  = new GattService(this.context, this, uuid, primary);
             this.server?.AddService(service.Native);
             return service;
         }
@@ -116,14 +116,16 @@ namespace Acr.Ble.Server
             {
                 var nservice = ((GattService) service).Native;
 
-
                 foreach (var characteristic in service.Characteristics)
                 {
                     var ncharacter = ((GattCharacteristic) characteristic).Native;
                     nservice.AddCharacteristic(ncharacter);
-                    //foreach (var descriptor in characteristic.Descriptors)
-                    //{
-                    //}
+
+                    foreach (var descriptor in characteristic.Descriptors)
+                    {
+                        var ndescriptor = ((GattDescriptor) descriptor).Native;
+                        ncharacter.AddDescriptor(ndescriptor);
+                    }
                 }
                 this.server.AddService(nservice);
             }
