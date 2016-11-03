@@ -5,17 +5,16 @@ namespace Acr.Ble.Server
 {
     public abstract class  AbstractGattDescriptor : IGattDescriptor
     {
-        protected AbstractGattDescriptor(IGattCharacteristic characteristic, Guid descriptorUuid)
+        protected AbstractGattDescriptor(IGattCharacteristic characteristic, Guid descriptorUuid, byte[] value)
         {
             this.Characteristic = characteristic;
             this.Uuid = descriptorUuid;
+            this.Value = value;
         }
 
 
         public IGattCharacteristic Characteristic { get; }
         public Guid Uuid { get; }
-
-        public abstract IObservable<ReadRequest> WhenReadReceived();
-        public abstract IObservable<WriteRequest> WhenWriteReceived();
+        public byte[] Value { get; }
     }
 }

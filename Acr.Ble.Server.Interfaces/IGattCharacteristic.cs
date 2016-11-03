@@ -11,9 +11,9 @@ namespace Acr.Ble.Server
         // permissions
         Guid Uuid { get; }
         CharacteristicProperties Properties { get; }
-        CharacteristicPermissions Permissions { get; }
+        GattPermissions Permissions { get; }
 
-        IGattDescriptor AddDescriptor(Guid uuid);
+        IGattDescriptor AddDescriptor(Guid uuid, byte[] value);
         IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
         void Broadcast(byte[] value, params IDevice[] devices);

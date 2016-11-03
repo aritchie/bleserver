@@ -7,7 +7,10 @@ namespace Acr.Ble.Server
 {
     public abstract class AbstractGattCharacteristic : IGattCharacteristic
     {
-        protected AbstractGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
+        protected AbstractGattCharacteristic(IGattService service,
+                                             Guid characteristicUuid,
+                                             CharacteristicProperties properties,
+                                             GattPermissions permissions)
         {
             this.Service = service;
             this.Uuid = characteristicUuid;
@@ -29,14 +32,14 @@ namespace Acr.Ble.Server
         public IGattService Service { get; }
         public Guid Uuid { get; }
         public CharacteristicProperties Properties { get; }
-        public CharacteristicPermissions Permissions { get; }
+        public GattPermissions Permissions { get; }
         public IReadOnlyList<IGattDescriptor> Descriptors { get; }
         public IReadOnlyList<IDevice> SubscribedDevices { get; }
 
 
-        public IGattDescriptor AddDescriptor(Guid uuid)
+        public IGattDescriptor AddDescriptor(Guid uuid, byte[] value)
         {
-            var native = this.CreateNative(uuid);
+            var native = this.CreateNative(uuid, value);
             this.InternalDescriptors.Add(native);
             return native;
         }
@@ -48,6 +51,6 @@ namespace Acr.Ble.Server
         public abstract IObservable<ReadRequest> WhenReadReceived();
         public abstract IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
 
-        protected abstract IGattDescriptor CreateNative(Guid uuid);
+        protected abstract IGattDescriptor CreateNative(Guid uuid, byte[] value);
     }
 }

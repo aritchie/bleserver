@@ -38,7 +38,9 @@ namespace Samples.ViewModels
                     this.ServerText = "Stop Server";
                     this.server.Start(new AdvertisementData
                     {
-                        LocalName = "Allan"
+                        LocalName = "Allan",
+                        IncludeDeviceName = true,
+                        IsConnectable = true
                     });
                     this.OnEvent("Server Started");
                 }
@@ -69,7 +71,7 @@ namespace Samples.ViewModels
                 var characteristic = service.AddCharacteristic(
                     Guid.NewGuid(),
                     CharacteristicProperties.Read | CharacteristicProperties.Write,
-                    CharacteristicPermissions.Writeable
+                    GattPermissions.Write
                 );
                 this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
 
@@ -77,11 +79,11 @@ namespace Samples.ViewModels
                 (
                     Guid.NewGuid(),
                     CharacteristicProperties.Notify,
-                    CharacteristicPermissions.Readable
+                    GattPermissions.Read
                 );
                 this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
 
-                //var descriptor = characteristic.AddDescriptor(Guid.NewGuid());
+                //var descriptor = characteristic.AddDescriptor(Guid.NewGuid(), Encoding.UTF8.GetBytes("Test Descriptor"));
 
                 notifyCharacteristic.WhenDeviceSubscriptionChanged().Subscribe(e =>
                 {

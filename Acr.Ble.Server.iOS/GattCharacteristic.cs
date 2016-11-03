@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
@@ -21,7 +20,7 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid characteristicUuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions)
+                                  GattPermissions permissions)
             : base(service, characteristicUuid, properties, permissions)
         {
             this.manager = manager;
@@ -29,9 +28,9 @@ namespace Acr.Ble.Server
 
             this.Native = new CBMutableCharacteristic(
                 characteristicUuid.ToCBUuid(),
-                (CBCharacteristicProperties) (int) properties,
+                (CBCharacteristicProperties) (int) properties, // TODO
                 new NSData(),
-                (CBAttributePermissions) (int) permissions
+                (CBAttributePermissions) (int) permissions // TODO
             );
         }
 
@@ -94,7 +93,7 @@ namespace Acr.Ble.Server
                         {
                             // TODO: is reply needed?
                             var device = new Device(native.Central);
-                            var request = new WriteRequest(device, (int)native.Offset, false);
+                            var request = new WriteRequest(device, native.Value.ToArray(), (int)native.Offset, false);
                             ob.OnNext(request);
 
                             var status = (CBATTError)Enum.Parse(typeof(CBATTError), request.Status.ToString());
@@ -124,7 +123,7 @@ namespace Acr.Ble.Server
                     if (args.Request.Characteristic.Equals(this.Native))
                     {
                         var device = new Device(args.Request.Central);
-                        var request = new ReadRequest(device);
+                        var request = new ReadRequest(device, (int)args.Request.Offset);
                         ob.OnNext(request);
 
                         var nativeStatus = (CBATTError) Enum.Parse(typeof(CBATTError), request.Status.ToString());
@@ -142,16 +141,9 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattDescriptor CreateNative(Guid uuid)
+        protected override IGattDescriptor CreateNative(Guid uuid, byte[] value)
         {
-            var descriptor = new GattDescriptor(this, uuid, this.manager);
-            var list = new List<CBDescriptor>();
-            if (this.Native.Descriptors != null)
-                list.AddRange(this.Native.Descriptors);
-
-            list.Add(descriptor.Native);
-            this.Native.Descriptors = list.ToArray();
-            return descriptor;
+            return new GattDescriptor(this, uuid, value);
         }
 
 

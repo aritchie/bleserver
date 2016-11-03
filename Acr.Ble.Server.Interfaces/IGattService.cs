@@ -11,7 +11,7 @@ namespace Acr.Ble.Server
         Guid Uuid { get; }
         bool IsPrimary { get; }
 
-        IGattCharacteristic AddCharacteristic(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions);
+        IGattCharacteristic AddCharacteristic(Guid uuid, CharacteristicProperties properties, GattPermissions permissions);
         IReadOnlyList<IGattCharacteristic> Characteristics { get; }
     }
 }

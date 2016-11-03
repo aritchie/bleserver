@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
 using Java.Util;
-using DroidGattStatus = Android.Bluetooth.GattStatus;
 using Observable = System.Reactive.Linq.Observable;
 
 
@@ -26,7 +26,7 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid uuid,
                                   CharacteristicProperties properties,
-                                  CharacteristicPermissions permissions) : base(service, uuid, properties, permissions)
+                                  GattPermissions permissions) : base(service, uuid, properties, permissions)
         {
             this.context = context;
             this.subscribers = new ConcurrentDictionary<string, IDevice>();
@@ -34,7 +34,7 @@ namespace Acr.Ble.Server
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 (GattProperty) (int) properties,
-                GattPermission.Read | GattPermission.Write
+                permissions.ToNative()
             );
             this.subscribeDescriptor = new BluetoothGattDescriptor(
                 NotifyDescriptorId.ToUuid(),
@@ -62,9 +62,10 @@ namespace Acr.Ble.Server
         }
 
 
+        IObservable<DeviceSubscriptionEvent> subscriptionOb;
         public override IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged()
         {
-            return Observable.Create<DeviceSubscriptionEvent>(ob =>
+            this.subscriptionOb = this.subscriptionOb ?? Observable.Create<DeviceSubscriptionEvent>(ob =>
             {
                 var handler = new EventHandler<DescriptorWriteEventArgs>((sender, args) =>
                 {
@@ -86,11 +87,12 @@ namespace Acr.Ble.Server
 
                 this.context.Callbacks.DescriptorWrite += handler;
 
-                return () =>
-                {
-                    this.context.Callbacks.DescriptorWrite -= handler;
-                };
-            });
+                return () => this.context.Callbacks.DescriptorWrite -= handler;
+            })
+            .Publish()
+            .RefCount();
+
+            return this.subscriptionOb;
         }
 
 
@@ -100,19 +102,20 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<CharacteristicWriteEventArgs>((sender, args) =>
                 {
+                    if (!args.Characteristic.Equals(this.Native))
+                        return;
+
                     var device = new Device(args.Device);
-                    var request = new WriteRequest(device, args.Offset, args.ResponseNeeded);
+                    var request = new WriteRequest(device, args.Value, args.Offset, args.ResponseNeeded);
                     ob.OnNext(request);
 
                     if (request.IsReplyNeeded)
                     {
-                        var status = (DroidGattStatus) Enum.Parse(typeof(DroidGattStatus), request.Status.ToString());
-
                         this.context.Server.SendResponse
                         (
                             args.Device,
                             args.RequestId,
-                            status,
+                            request.Status.ToNative(),
                             request.Offset,
                             request.Value
                         );
@@ -131,13 +134,17 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<CharacteristicReadEventArgs>((sender, args) =>
                 {
-                    var request = new ReadRequest(null);
+                    if (!args.Characteristic.Equals(this.Native))
+                        return;
+
+                    var device = new Device(args.Device);
+                    var request = new ReadRequest(device, args.Offset);
                     ob.OnNext(request);
-                    var status = (DroidGattStatus)Enum.Parse(typeof(GattStatus), request.Status.ToString());
+
                     this.context.Server.SendResponse(
                         args.Device,
                         args.RequestId,
-                        status,
+                        request.Status.ToNative(),
                         args.Offset,
                         request.Value
                     );
@@ -148,9 +155,9 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattDescriptor CreateNative(Guid uuid)
+        protected override IGattDescriptor CreateNative(Guid uuid, byte[] value)
         {
-            return new GattDescriptor(this.context, this, uuid);
+            return new GattDescriptor(this, uuid, value);
         }
     }
 }

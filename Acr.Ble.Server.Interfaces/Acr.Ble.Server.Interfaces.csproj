@@ -41,7 +41,7 @@
     <Compile Include="Beacons\Beacon.cs" />
     <Compile Include="Beacons\BeaconAdvertiserImpl.cs" />
     <Compile Include="Beacons\IBeaconAdvertiser.cs" />
-    <Compile Include="CharacteristicPermissions.cs" />
+    <Compile Include="GattPermissions.cs" />
     <Compile Include="AdvertisementData.cs" />
     <Compile Include="CharacteristicProperties.cs" />
     <Compile Include="IGattCharacteristic.cs" />

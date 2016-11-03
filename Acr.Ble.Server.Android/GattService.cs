@@ -22,7 +22,7 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
+        protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, GattPermissions permissions)
         {
             return new GattCharacteristic(this.context, this, uuid, properties, permissions);
         }

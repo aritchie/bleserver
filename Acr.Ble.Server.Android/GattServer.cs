@@ -40,6 +40,7 @@ namespace Acr.Ble.Server
 
         public override void Stop()
         {
+            this.isRunning = false;
             this.manager.Adapter.BluetoothLeAdvertiser.StopAdvertising(this.adCallbacks);
             this.context.Server = null;
             this.server?.Close();

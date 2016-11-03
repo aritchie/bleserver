@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CoreBluetooth;
 
 
@@ -18,17 +17,9 @@ namespace Acr.Ble.Server
         }
 
 
-        protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, CharacteristicPermissions permissions)
+        protected override IGattCharacteristic CreateNative(Guid uuid, CharacteristicProperties properties, GattPermissions permissions)
         {
-            var characteristic = new GattCharacteristic(this.manager, this, uuid, properties, permissions);
-            var list = new List<CBCharacteristic>();
-            if (this.Native.Characteristics != null)
-                list.AddRange(this.Native.Characteristics);
-
-            list.Add(characteristic.Native);
-            this.Native.Characteristics = list.ToArray();
-
-            return characteristic;
+            return new GattCharacteristic(this.manager, this, uuid, properties, permissions);
         }
     }
 }

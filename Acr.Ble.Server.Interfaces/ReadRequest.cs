@@ -5,9 +5,10 @@ namespace Acr.Ble.Server
 {
     public class ReadRequest
     {
-        public ReadRequest(IDevice device)
+        public ReadRequest(IDevice device, int offset)
         {
             this.Device = device;
+            this.Offset = offset;
         }
 
 

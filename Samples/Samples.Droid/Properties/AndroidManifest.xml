@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.acrapps.bleserversample" android:installLocation="auto" android:versionCode="1" android:versionName="1.0">
 	<uses-sdk android:minSdkVersion="15" />
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-	<application android:label="BLE Server Sample" android:icon="@drawable/icon" android:theme="@style/MyTheme"></application>
+	<application android:label="BLE Server" android:icon="@drawable/icon" android:theme="@style/MyTheme"></application>
 </manifest>
