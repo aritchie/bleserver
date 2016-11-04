@@ -17,24 +17,9 @@ namespace Acr.Ble.Server
             this.Properties = properties;
             this.Permissions = permissions;
 
-            this.InternalSubscribedDevices = new List<IDevice>();
-            this.SubscribedDevices = new ReadOnlyCollection<IDevice>(this.InternalSubscribedDevices);
-
             this.InternalDescriptors = new List<IGattDescriptor>();
             this.Descriptors = new ReadOnlyCollection<IGattDescriptor>(this.InternalDescriptors);
         }
-
-
-        protected IList<IDevice> InternalSubscribedDevices { get; }
-        protected IList<IGattDescriptor> InternalDescriptors { get; }
-
-
-        public IGattService Service { get; }
-        public Guid Uuid { get; }
-        public CharacteristicProperties Properties { get; }
-        public GattPermissions Permissions { get; }
-        public IReadOnlyList<IGattDescriptor> Descriptors { get; }
-        public IReadOnlyList<IDevice> SubscribedDevices { get; }
 
 
         public IGattDescriptor AddDescriptor(Guid uuid, byte[] value)
@@ -45,6 +30,14 @@ namespace Acr.Ble.Server
         }
 
 
+        protected IList<IGattDescriptor> InternalDescriptors { get; }
+
+        public IGattService Service { get; }
+        public Guid Uuid { get; }
+        public CharacteristicProperties Properties { get; }
+        public GattPermissions Permissions { get; }
+        public IReadOnlyList<IGattDescriptor> Descriptors { get; }
+        public abstract IReadOnlyList<IDevice> SubscribedDevices { get; }
         public abstract void Broadcast(byte[] value, params IDevice[] devices);
         public abstract void BroadcastToAll(byte[] value);
         public abstract IObservable<WriteRequest> WhenWriteReceived();

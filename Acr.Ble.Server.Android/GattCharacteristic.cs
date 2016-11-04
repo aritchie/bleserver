@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
@@ -15,11 +16,12 @@ namespace Acr.Ble.Server
         public static readonly Guid NotifyDescriptorId = new Guid("00002902-0000-1000-8000-00805f9b34fb");
         public static readonly UUID NotifyDescriptorUuid = Java.Util.UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
         public static readonly byte[] NotifyEnabledBytes = BluetoothGattDescriptor.EnableNotificationValue.ToArray();
+        public static readonly byte[] NotifyDisableBytes = BluetoothGattDescriptor.DisableNotificationValue.ToArray();
 
         public BluetoothGattCharacteristic Native { get; }
+        public BluetoothGattDescriptor NotificationDescriptor { get; }
         readonly GattContext context;
-        readonly ConcurrentDictionary<string, IDevice> subscribers;
-        readonly BluetoothGattDescriptor subscribeDescriptor;
+        readonly IDictionary<string, IDevice> subscribers;
 
 
         public GattCharacteristic(GattContext context,
@@ -29,17 +31,30 @@ namespace Acr.Ble.Server
                                   GattPermissions permissions) : base(service, uuid, properties, permissions)
         {
             this.context = context;
-            this.subscribers = new ConcurrentDictionary<string, IDevice>();
+            this.subscribers = new Dictionary<string, IDevice>();
 
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 (GattProperty) (int) properties,
                 permissions.ToNative()
             );
-            this.subscribeDescriptor = new BluetoothGattDescriptor(
+            this.NotificationDescriptor = new BluetoothGattDescriptor(
                 NotifyDescriptorId.ToUuid(),
                 GattDescriptorPermission.Write
             );
+            this.Native.AddDescriptor(this.NotificationDescriptor);
+        }
+
+
+        public override IReadOnlyList<IDevice> SubscribedDevices
+        {
+            get
+            {
+                lock (this.subscribers)
+                {
+                    return new ReadOnlyCollection<IDevice>(this.subscribers.Values.ToArray());
+                }
+            }
         }
 
 
@@ -57,6 +72,7 @@ namespace Acr.Ble.Server
         public override void BroadcastToAll(byte[] value)
         {
             this.Native.SetValue(value);
+            // use idevices?
             foreach (var dev in this.context.Server.ConnectedDevices)
                 this.context.Server.NotifyCharacteristicChanged(dev, this.Native, false);
         }
@@ -69,17 +85,18 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<DescriptorWriteEventArgs>((sender, args) =>
                 {
-                    if (args.Descriptor.Uuid.Equals(NotifyDescriptorUuid))
+                    if (args.Descriptor.Equals(this.NotificationDescriptor))
                     {
-                        if (args.Value.Equals(NotifyEnabledBytes))
+                        if (args.Value.SequenceEqual(NotifyEnabledBytes))
                         {
-                            var device = this.subscribers.GetOrAdd(args.Device.Address, address => new Device(args.Device));
+                            var device = this.GetOrAdd(args.Device);
                             ob.OnNext(new DeviceSubscriptionEvent(device, true));
                         }
                         else
                         {
-                            IDevice device;
-                            if (this.subscribers.TryRemove(args.Device.Address, out device))
+                            // TODO: not unsubscribes
+                            var device = this.Remove(args.Device);
+                            if (device != null)
                                 ob.OnNext(new DeviceSubscriptionEvent(device, false));
                         }
                     }
@@ -158,6 +175,35 @@ namespace Acr.Ble.Server
         protected override IGattDescriptor CreateNative(Guid uuid, byte[] value)
         {
             return new GattDescriptor(this, uuid, value);
+        }
+
+
+        IDevice GetOrAdd(BluetoothDevice native)
+        {
+            lock (this.subscribers)
+            {
+                if (this.subscribers.ContainsKey(native.Address))
+                    return this.subscribers[native.Address];
+
+                var device = new Device(native);
+                this.subscribers.Add(native.Address, device);
+                return device;
+            }
+        }
+
+
+        IDevice Remove(BluetoothDevice native)
+        {
+            lock (this.subscribers)
+            {
+                if (this.subscribers.ContainsKey(native.Address))
+                {
+                    var device = this.subscribers[native.Address];
+                    this.subscribers.Remove(native.Address);
+                    return device;
+                }
+                return null;
+            }
         }
     }
 }

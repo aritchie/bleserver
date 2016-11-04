@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
@@ -10,8 +12,8 @@ namespace Acr.Ble.Server
 {
     public class GattCharacteristic : AbstractGattCharacteristic
     {
-        readonly ConcurrentDictionary<CBUUID, IDevice> subscribers;
         readonly CBPeripheralManager manager;
+        readonly IDictionary<CBUUID, IDevice> subscribers;
 
         public CBMutableCharacteristic Native { get; }
 
@@ -32,6 +34,18 @@ namespace Acr.Ble.Server
                 new NSData(),
                 (CBAttributePermissions) (int) permissions // TODO
             );
+        }
+
+
+        public override IReadOnlyList<IDevice> SubscribedDevices
+        {
+            get
+            {
+                lock (this.subscribers)
+                {
+                    return new ReadOnlyCollection<IDevice>(this.subscribers.Values.ToArray());
+                }
+            }
         }
 
 
@@ -154,16 +168,45 @@ namespace Acr.Ble.Server
                 // on has a subcription or has none
                 if (subscribing)
                 {
-                    var device = this.subscribers.GetOrAdd(args.Central.UUID, uuid => new Device(args.Central));
+                    var device = this.GetOrAdd(args.Central);
                     ob.OnNext(new DeviceSubscriptionEvent(device, true));
                 }
                 else
                 {
-                    IDevice device;
-                    if (this.subscribers.TryRemove(args.Central.UUID, out device))
+                    var device = this.Remove(args.Central);
+                    if (device != null)
                         ob.OnNext(new DeviceSubscriptionEvent(device, false));
                 }
             };
+        }
+
+
+        IDevice GetOrAdd(CBCentral central)
+        {
+            lock (this.subscribers)
+            {
+                if (this.subscribers.ContainsKey(central.UUID))
+                    return this.subscribers[central.UUID];
+
+                var device = new Device(central);
+                this.subscribers.Add(central.UUID, device);
+                return device;
+            }
+        }
+
+
+        IDevice Remove(CBCentral central)
+        {
+            lock (this.subscribers)
+            {
+                if (this.subscribers.ContainsKey(central.UUID))
+                {
+                    var device = this.subscribers[central.UUID];
+                    this.subscribers.Remove(central.UUID);
+                    return device;
+                }
+                return null;
+            }
         }
     }
 }
