@@ -22,16 +22,15 @@ namespace Acr.Ble.Server
                                   IGattService service,
                                   Guid characteristicUuid,
                                   CharacteristicProperties properties,
-                                  GattPermissions permissions)
-            : base(service, characteristicUuid, properties, permissions)
+                                  GattPermissions permissions) : base(service, characteristicUuid, properties, permissions)
         {
             this.manager = manager;
             this.subscribers = new ConcurrentDictionary<CBUUID, IDevice>();
 
             this.Native = new CBMutableCharacteristic(
                 characteristicUuid.ToCBUuid(),
-                (CBCharacteristicProperties) (int) properties, // TODO
-                new NSData(),
+                properties.ToNative(),
+                null,
                 (CBAttributePermissions) (int) permissions // TODO
             );
         }
@@ -117,7 +116,6 @@ namespace Acr.Ble.Server
                 });
                 this.manager.WriteRequestsReceived += handler;
                 return () => this.manager.WriteRequestsReceived -= handler;
-                ;
             })
             .Publish()
             .RefCount();

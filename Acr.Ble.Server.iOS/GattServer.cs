@@ -9,17 +9,15 @@ namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
+        readonly CBPeripheralManager manager = new CBPeripheralManager();
         readonly IList<IGattService> services = new List<IGattService>();
-        CBPeripheralManager manager;
 
 
-        bool isRunning;
-        public override bool IsRunning => this.isRunning;
+        public override bool IsRunning => this.manager.Advertising;
+
 
         public override void Start(AdvertisementData adData)
         {
-            this.manager = new CBPeripheralManager(null, DispatchQueue.DefaultGlobalQueue);
-
             this.services
                 .Cast<GattService>()
                 .Select(x =>
@@ -29,11 +27,11 @@ namespace Acr.Ble.Server
                         .Cast<GattCharacteristic>()
                         .Select(y =>
                         {
-                            y.Native.Descriptors = y
-                                .Descriptors
-                                .Cast<GattDescriptor>()
-                                .Select(z => z.Native)
-                                .ToArray();
+                            //y.Native.Descriptors = y
+                            //    .Descriptors
+                            //    .Cast<GattDescriptor>()
+                            //    .Select(z => z.Native)
+                            //    .ToArray();
                             return y.Native;
                         })
                         .ToArray();
@@ -41,7 +39,9 @@ namespace Acr.Ble.Server
                     return x.Native;
                 })
                 .ToList()
-                .ForEach(this.manager.AddService);
+                .ForEach(x => {
+                this.manager.AddService(x);
+            }                    );
 
             this.manager.StartAdvertising(new StartAdvertisingOptions
             {
@@ -51,30 +51,21 @@ namespace Acr.Ble.Server
                     .Select(x => CBUUID.FromString(x.ToString()))
                     .ToArray()
             });
-
-            this.isRunning = true;
         }
 
 
         public override void Stop()
         {
-            if (this.manager == null)
-                return;
-
             this.manager.RemoveAllServices();
             this.manager.StopAdvertising();
-            this.manager.Dispose();
-            this.manager = null;
         }
 
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
-            if (this.IsRunning)
-                throw new ArgumentException("You can't add a service to a server that is running");
-
             var service = new GattService(this.manager, this, uuid, primary);
             this.services.Add(service);
+            //this.context?.Manager.AddService(service.Native); // TODO: build the service out?
             return service;
         }
 
@@ -84,7 +75,7 @@ namespace Acr.Ble.Server
             if (this.services.Remove(service))
             {
                 var native = ((GattService)service).Native;
-                this.manager.RemoveService(native);
+                //this.context.Manager?.RemoveService(native);
             }
         }
 
@@ -92,7 +83,7 @@ namespace Acr.Ble.Server
         protected override void ClearNative()
         {
             this.services.Clear();
-            this.manager?.RemoveAllServices();
+            //this.context.Manager?.RemoveAllServices();
         }
     }
 }

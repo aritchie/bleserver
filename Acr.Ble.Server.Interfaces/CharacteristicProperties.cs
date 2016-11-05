@@ -8,7 +8,7 @@ namespace Acr.Ble.Server
     {
         Broadcast = 1, //0x1
         Read = 2, //0x2
-        AppleWriteWithoutResponse = 4, //0x4
+        WriteWithoutResponse = 4, //0x4
         Write = 8, //0x8
         Notify = 16, //0x10
         Indicate = 32, //0x20
@@ -18,3 +18,17 @@ namespace Acr.Ble.Server
         IndicateEncryptionRequired = 512
     }
 }
+
+/*
+ * iOS
+        Broadcast = 1uL,
+        Read = 2uL,
+        WriteWithoutResponse = 4uL,
+        Write = 8uL,
+        Notify = 16uL,
+        Indicate = 32uL,
+        AuthenticatedSignedWrites = 64uL,
+        ExtendedProperties = 128uL,
+        NotifyEncryptionRequired = 256uL,
+        IndicateEncryptionRequired = 512uL
+*/
