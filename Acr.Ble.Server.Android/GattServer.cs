@@ -82,8 +82,8 @@ namespace Acr.Ble.Server
                 .SetIncludeDeviceName(adData.IncludeDeviceName)
                 .SetIncludeTxPowerLevel(adData.IncludeTxPower);
 
-            foreach (var keyValue in adData.ManufacturerData)
-                data.AddManufacturerData(keyValue.Key, keyValue.Value);
+            if (adData.ManufacturerId != null)
+                data.AddManufacturerData(adData.ManufacturerId.Value, adData.ManufacturerData);
 
             foreach (var serviceUuid in adData.ServiceUuids)
             {
@@ -91,11 +91,11 @@ namespace Acr.Ble.Server
                 data.AddServiceUuid(uuid);
             }
 
-            foreach (var keyValue in adData.ServiceData)
-            {
-                var uuid = ParcelUuid.FromString(keyValue.Key.ToString());
-                data.AddServiceData(uuid, keyValue.Value);
-            }
+            //foreach (var keyValue in adData.ServiceData)
+            //{
+            //    var uuid = ParcelUuid.FromString(keyValue.Key.ToString());
+            //    data.AddServiceData(uuid, keyValue.Value);
+            //}
 
             this.manager
                 .Adapter

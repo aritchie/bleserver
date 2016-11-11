@@ -42,7 +42,9 @@ namespace Samples.ViewModels
                     {
                         LocalName = "Allan",
                         IncludeDeviceName = true,
-                        IsConnectable = true
+                        IsConnectable = true,
+                        ManufacturerId = 127,
+                        ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
                     });
                     this.OnEvent("Server Started");
                 }

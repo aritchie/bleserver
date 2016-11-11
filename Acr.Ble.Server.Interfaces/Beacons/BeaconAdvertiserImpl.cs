@@ -31,9 +31,10 @@ namespace Acr.Ble.Server.Beacons
             bytes.AddRange(BitConverter.GetBytes(beacon.Major).Reverse());
             bytes.AddRange(BitConverter.GetBytes(beacon.Minor).Reverse());
 
-            packet.ManufacturerData.Add(27, bytes.ToArray());
+            packet.SetManufacturerData(27, bytes.ToArray());
             this.server.Start(packet);
         }
+
 
         public void Stop()
         {
