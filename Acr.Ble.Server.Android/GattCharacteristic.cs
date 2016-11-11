@@ -7,6 +7,7 @@ using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
 using Java.Util;
 using Observable = System.Reactive.Linq.Observable;
+using static System.Diagnostics.Debug;
 
 
 namespace Acr.Ble.Server
@@ -35,12 +36,12 @@ namespace Acr.Ble.Server
 
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
-                (GattProperty) (int) properties,
+                properties.ToNative(),
                 permissions.ToNative()
             );
             this.NotificationDescriptor = new BluetoothGattDescriptor(
                 NotifyDescriptorId.ToUuid(),
-                GattDescriptorPermission.Write
+                GattDescriptorPermission.Write | GattDescriptorPermission.Read
             );
             this.Native.AddDescriptor(this.NotificationDescriptor);
         }
@@ -61,20 +62,19 @@ namespace Acr.Ble.Server
         public override void Broadcast(byte[] value, params IDevice[] devices)
         {
             this.Native.SetValue(value);
+
+            if (devices == null || devices.Length == 0)
+                devices = this.subscribers.Values.ToArray();
+
             devices
-                .Cast<Device>()
+                .OfType<Device>()
                 .Select(x => x.Native)
                 .ToList()
-                .ForEach(x => this.context.Server.NotifyCharacteristicChanged(x, this.Native, false));
-        }
-
-
-        public override void BroadcastToAll(byte[] value)
-        {
-            this.Native.SetValue(value);
-            // use idevices?
-            foreach (var dev in this.context.Server.ConnectedDevices)
-                this.context.Server.NotifyCharacteristicChanged(dev, this.Native, false);
+                .ForEach(x =>
+                {
+                    if (!this.context.Server.NotifyCharacteristicChanged(x, this.Native, true))
+                        WriteLine("Failed to trigger notification");
+                });
         }
 
 
@@ -101,10 +101,24 @@ namespace Acr.Ble.Server
                         }
                     }
                 });
+                var dhandler = new EventHandler<ConnectionStateChangeEventArgs>((sender, args) =>
+                {
+                    if (args.NewState != ProfileState.Disconnected)
+                        return;
 
+                    var device = this.Remove(args.Device);
+                    if (device != null)
+                        ob.OnNext(new DeviceSubscriptionEvent(device, false));
+                });
+
+                this.context.Callbacks.ConnectionStateChanged += dhandler;
                 this.context.Callbacks.DescriptorWrite += handler;
 
-                return () => this.context.Callbacks.DescriptorWrite -= handler;
+                return () =>
+                {
+                    this.context.Callbacks.DescriptorWrite -= handler;
+                    this.context.Callbacks.ConnectionStateChanged -= dhandler;
+                };
             })
             .Publish()
             .RefCount();

@@ -23,7 +23,7 @@ namespace Acr.Ble.Server
  * iOS
         Broadcast = 1uL,
         Read = 2uL,
-        WriteWithoutResponse = 4uL,
+        WriteWithoutResponse = 4uL, // writenoresponse
         Write = 8uL,
         Notify = 16uL,
         Indicate = 32uL,
@@ -31,4 +31,14 @@ namespace Acr.Ble.Server
         ExtendedProperties = 128uL,
         NotifyEncryptionRequired = 256uL,
         IndicateEncryptionRequired = 512uL
+
+    Android
+        Broadcast
+        ExtendedProps
+        Indicate
+        Notify
+        Read
+        SignedWrite
+        Write
+        WriteNoResponse
 */

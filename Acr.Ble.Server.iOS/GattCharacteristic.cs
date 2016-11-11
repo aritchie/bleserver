@@ -51,19 +51,18 @@ namespace Acr.Ble.Server
         public override void Broadcast(byte[] value, params IDevice[] devices)
         {
             var data = NSData.FromArray(value);
+
+            if (devices == null || devices.Length > 0)
+            {
+                this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
+                return;
+            }
             var centrals = devices
-                .Cast<Device>()
+                .OfType<Device>()
                 .Select(x => x.Central)
                 .ToArray();
 
             this.manager.UpdateValue(data, this.Native, centrals);
-        }
-
-
-        public override void BroadcastToAll(byte[] value)
-        {
-            var data = NSData.FromArray(value);
-            this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
         }
 
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
+using Acr;
 using Acr.Ble.Server;
 using ReactiveUI.Fody.Helpers;
 using Samples.Services;
@@ -70,8 +72,8 @@ namespace Samples.ViewModels
 
                 var characteristic = service.AddCharacteristic(
                     Guid.NewGuid(),
-                    CharacteristicProperties.Read | CharacteristicProperties.Write,
-                    GattPermissions.Write
+                    CharacteristicProperties.Read | CharacteristicProperties.Write | CharacteristicProperties.WriteWithoutResponse,
+                    GattPermissions.Read | GattPermissions.Write
                 );
                 this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
 
@@ -89,21 +91,17 @@ namespace Samples.ViewModels
                 {
                     var @event = e.IsSubscribed ? "Subscribed" : "Unsubcribed";
                     this.OnEvent($"Device {e.Device.Uuid} {@event}");
-                    this.OnEvent($"Characteristic Subscribers: {notifyCharacteristic.SubscribedDevices.Count}");
+                    this.OnEvent($"Charcteristic Subcribers: {notifyCharacteristic.SubscribedDevices.Count}");
 
-                    if (notifyCharacteristic.SubscribedDevices.Count == 0)
-                    {
-                        this.notifyBroadcast?.Dispose();
-                        this.notifyBroadcast = null;
-                        this.OnEvent("No subcribers to characteristic");
-                    }
-                    else if (this.notifyBroadcast == null)
+                    if (this.notifyBroadcast == null)
                     {
                         this.OnEvent("Starting Subscriber Thread");
                         this.notifyBroadcast = Observable
                             .Interval(TimeSpan.FromSeconds(1))
+                            .Where(x => notifyCharacteristic.SubscribedDevices.Count > 0)
                             .Subscribe(_ =>
                             {
+                                Debug.WriteLine("Sending Broadcast");
                                 var dt = DateTime.Now.ToString("g");
                                 var bytes = Encoding.UTF8.GetBytes(dt);
                                 notifyCharacteristic.Broadcast(bytes);
@@ -113,7 +111,11 @@ namespace Samples.ViewModels
 
                 characteristic.WhenReadReceived().Subscribe(x =>
                 {
-                    x.Value = Encoding.UTF8.GetBytes(this.CharacteristicValue);
+                    var write = this.CharacteristicValue;
+                    if (write.IsEmpty())
+                        write = "(NOTHING)";
+
+                    x.Value = Encoding.UTF8.GetBytes(write);
                     this.OnEvent("Characteristic Read Received");
                 });
                 characteristic.WhenWriteReceived().Subscribe(x =>

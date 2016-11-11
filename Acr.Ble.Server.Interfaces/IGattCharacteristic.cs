@@ -16,8 +16,12 @@ namespace Acr.Ble.Server
         IGattDescriptor AddDescriptor(Guid uuid, byte[] value);
         IReadOnlyList<IGattDescriptor> Descriptors { get; }
 
+        /// <summary>
+        /// Send null to broadcast to all
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="devices"></param>
         void Broadcast(byte[] value, params IDevice[] devices);
-        void BroadcastToAll(byte[] value);
 
         IObservable<WriteRequest> WhenWriteReceived();
         IObservable<ReadRequest> WhenReadReceived();

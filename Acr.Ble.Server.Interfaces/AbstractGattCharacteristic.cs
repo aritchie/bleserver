@@ -39,7 +39,6 @@ namespace Acr.Ble.Server
         public IReadOnlyList<IGattDescriptor> Descriptors { get; }
         public abstract IReadOnlyList<IDevice> SubscribedDevices { get; }
         public abstract void Broadcast(byte[] value, params IDevice[] devices);
-        public abstract void BroadcastToAll(byte[] value);
         public abstract IObservable<WriteRequest> WhenWriteReceived();
         public abstract IObservable<ReadRequest> WhenReadReceived();
         public abstract IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
