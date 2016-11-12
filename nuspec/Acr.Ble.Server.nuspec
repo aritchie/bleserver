@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Acr.Ble.Server</id>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <title>ACR Reactive BluetoothLE Server Plugin for Xamarin</title>
         <summary>Xplat Bluetooth LE Gatt Server</summary>
         <description>
@@ -14,9 +14,9 @@ PCL support for bluetooth low energy (BLE) gatt server
         <licenseUrl>https://github.com/aritchie/bleserver/LICENSE.md</licenseUrl>
         <projectUrl>https://github.com/aritchie/bleserver</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <tags>ios android xamarin xam.pcl ble bluetooth gatt</tags>
+        <tags>ios android xamarin xam.pcl server ble bluetooth gatt</tags>
         <dependencies>
-            <dependency id="rx-main" version="[1, 2)" />
+            <dependency id="rx-main" version="[2.2.5, 3)" />
         </dependencies>
         <releaseNotes>
 1.0.0
