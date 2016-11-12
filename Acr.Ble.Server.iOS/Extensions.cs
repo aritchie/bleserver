@@ -9,15 +9,16 @@ namespace Acr.Ble.Server
     {
         public static CBUUID ToCBUuid(this Guid guid)
         {
-            return CBUUID.FromBytes(guid.ToByteArray());
+            //return CBUUID.FromBytes(guid.ToByteArray());
+            return CBUUID.FromString(guid.ToString());
         }
 
 
-        public static Guid FromCBUuid(this CBUUID uuid)
-        {
-            var bytes = uuid.Data.ToArray();
-            return new Guid(bytes);
-        }
+        //public static Guid FromCBUuid(this CBUUID uuid)
+        //{
+            //var bytes = uuid.Data.ToArray();
+            //return new Guid(bytes);
+        //}
 
 
         public static CBCharacteristicProperties ToNative(this CharacteristicProperties properties)

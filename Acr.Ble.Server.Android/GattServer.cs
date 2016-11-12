@@ -30,6 +30,7 @@ namespace Acr.Ble.Server
         bool isRunning = false;
         public override bool IsRunning => this.isRunning;
 
+
         public override void Start(AdvertisementData adData)
         {
             this.StartAdvertising(adData);
@@ -75,13 +76,12 @@ namespace Acr.Ble.Server
         {
             var settings = new AdvertiseSettings.Builder()
                 .SetAdvertiseMode(AdvertiseMode.Balanced)
-                .SetConnectable(adData.IsConnectable);
-                //.SetTxPowerLevel(AdvertiseTx.PowerHigh);
+                .SetConnectable(true);
 
             var data = new AdvertiseData.Builder()
-                .SetIncludeDeviceName(adData.IncludeDeviceName)
-                .SetIncludeTxPowerLevel(adData.IncludeTxPower);
-
+                .SetIncludeDeviceName(adData.LocalName != null)
+                .SetIncludeTxPowerLevel(true);
+            
             if (adData.ManufacturerId != null)
                 data.AddManufacturerData(adData.ManufacturerId.Value, adData.ManufacturerData);
 

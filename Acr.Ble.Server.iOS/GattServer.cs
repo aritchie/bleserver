@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using CoreBluetooth;
-using Foundation;
 
 
 namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
-        readonly CBPeripheralManager manager = new CBPeripheralManager();
         readonly IList<IGattService> services = new List<IGattService>();
+        readonly CBPeripheralManager manager;
+
+
+        public GattServer(CBPeripheralManager manager)
+        {
+            this.manager = manager;
+        }
 
 
         public override bool IsRunning => this.manager.Advertising;
@@ -25,54 +30,7 @@ namespace Acr.Ble.Server
             if (this.manager.State != CBPeripheralManagerState.PoweredOn)
                 throw new ArgumentException("Invalid State - " + this.manager.State);
 
-            this.manager.StateUpdated += (sender, e) => {
-                
-            this.services
-                .Cast<GattService>()
-                .Select(x =>
-                {
-                    x.Native.Characteristics = x
-                        .Characteristics
-                        .OfType<GattCharacteristic>()
-                        .Select(y =>
-                        {
-                            y.Native.Descriptors = y
-                                .Descriptors
-                                .OfType<GattDescriptor>()
-                                .Select(z => z.Native)
-                                .ToArray();
-                            return y.Native;
-                        })
-                        .ToArray();
 
-                    return x.Native;
-                })
-                .ToList()
-                .ForEach(x => 
-                {
-                    this.manager.AddService(x);
-                });
-            };
-
-            var opts = new StartAdvertisingOptions
-            {
-                LocalName = adData.LocalName,
-                ServicesUUID = adData
-                    .ServiceUuids
-                    .Select(x => CBUUID.FromString(x.ToString()))
-                    .ToArray()
-            };
-            opts.Dictionary.SetValueForKey(NSObject.FromObject(adData.IsConnectable), CBAdvertisement.IsConnectable);
-
-            if (adData.ManufacturerData != null)
-            {
-                var md = new List<byte>();
-                md.AddRange(BitConverter.GetBytes(adData.ManufacturerId.Value));
-                md.AddRange(adData.ManufacturerData);
-                var data = md.ToArray();
-                opts.Dictionary.SetValueForKey(NSData.FromArray(data), CBAdvertisement.DataManufacturerDataKey);    
-            }
-             
             this.manager.AdvertisingStarted += (sender, e) => 
             {
                 if (e.Error != null)
@@ -82,7 +40,37 @@ namespace Acr.Ble.Server
                     
             };
 
-            this.manager.StartAdvertising(opts);
+            this.manager.StartAdvertising(new StartAdvertisingOptions
+            {
+                LocalName = adData.LocalName,
+                ServicesUUID = adData
+                    .ServiceUuids
+                    .Select(x => CBUUID.FromString(x.ToString()))
+                    .ToArray()
+                });
+
+            this.services
+                .Cast<GattService>()
+                .Select(x =>
+                {
+                    x.Native.Characteristics = x
+                        .Characteristics
+                        .OfType<GattCharacteristic>()
+                        .Select(y =>
+                    {
+                        y.Native.Descriptors = y
+                            .Descriptors
+                            .OfType<GattDescriptor>()
+                            .Select(z => z.Native)
+                            .ToArray();
+                        return y.Native;
+                    })
+                        .ToArray();
+
+                    return x.Native;
+                })
+                .ToList()
+                .ForEach(this.manager.AddService);
         }
 
 

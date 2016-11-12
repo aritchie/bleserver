@@ -59,7 +59,7 @@ namespace Acr.Ble.Server
 
         public IGattServer CreateGattServer()
         {
-            return new GattServer();
+            return new GattServer(this.manager);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Acr.Ble.Server
     public class GattCharacteristic : AbstractGattCharacteristic
     {
         readonly CBPeripheralManager manager;
-        readonly IDictionary<CBUUID, IDevice> subscribers;
+        readonly IDictionary<NSUuid, IDevice> subscribers;
 
         public CBMutableCharacteristic Native { get; }
 
@@ -25,7 +25,7 @@ namespace Acr.Ble.Server
                                   GattPermissions permissions) : base(service, characteristicUuid, properties, permissions)
         {
             this.manager = manager;
-            this.subscribers = new ConcurrentDictionary<CBUUID, IDevice>();
+            this.subscribers = new ConcurrentDictionary<NSUuid, IDevice>();
 
             this.Native = new CBMutableCharacteristic(
                 characteristicUuid.ToCBUuid(),
@@ -182,11 +182,11 @@ namespace Acr.Ble.Server
         {
             lock (this.subscribers)
             {
-                if (this.subscribers.ContainsKey(central.UUID))
-                    return this.subscribers[central.UUID];
+                if (this.subscribers.ContainsKey(central.Identifier))
+                    return this.subscribers[central.Identifier];
 
                 var device = new Device(central);
-                this.subscribers.Add(central.UUID, device);
+                this.subscribers.Add(central.Identifier, device);
                 return device;
             }
         }
@@ -196,10 +196,10 @@ namespace Acr.Ble.Server
         {
             lock (this.subscribers)
             {
-                if (this.subscribers.ContainsKey(central.UUID))
+                if (this.subscribers.ContainsKey(central.Identifier))
                 {
-                    var device = this.subscribers[central.UUID];
-                    this.subscribers.Remove(central.UUID);
+                    var device = this.subscribers[central.Identifier];
+                    this.subscribers.Remove(central.Identifier);
                     return device;
                 }
                 return null;

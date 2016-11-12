@@ -9,7 +9,7 @@ namespace Acr.Ble.Server
         public Device(CBCentral central)
         {
             this.Central = central;
-            this.Uuid = central.UUID.FromCBUuid();
+            this.Uuid = new Guid(central.Identifier.ToString());
         }
 
 

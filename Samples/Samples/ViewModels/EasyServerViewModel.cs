@@ -51,8 +51,6 @@ namespace Samples.ViewModels
                         this.server.Start(new AdvertisementData
                         {
                             LocalName = "Allan",
-                            IncludeDeviceName = true,
-                            IsConnectable = true,
                             ManufacturerId = 127,
                             ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
                         });
@@ -95,8 +93,8 @@ namespace Samples.ViewModels
                 var notifyCharacteristic = service.AddCharacteristic
                 (
                     Guid.NewGuid(),
-                    CharacteristicProperties.Notify,
-                    GattPermissions.Read
+                    CharacteristicProperties.Indicate | CharacteristicProperties.Notify,
+                    GattPermissions.Read | GattPermissions.Write
                 );
                 this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
 

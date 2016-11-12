@@ -7,11 +7,11 @@ namespace Acr.Ble.Server
     public class AdvertisementData
     {
         // android only
-        public bool IncludeDeviceName { get; set; }
-        public bool IncludeTxPower { get; set; }
+        //public bool IncludeDeviceName { get; set; }
+        //public bool IncludeTxPower { get; set; }
 
         // all
-        public bool IsConnectable { get; set; }
+        //public bool IsConnectable { get; set; }
         public string LocalName { get; set; }
         public List<Guid> ServiceUuids { get; set; } = new List<Guid>();
 
