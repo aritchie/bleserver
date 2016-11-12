@@ -47,7 +47,6 @@
     <Compile Include="IGattCharacteristic.cs" />
     <Compile Include="IGattDescriptor.cs" />
     <Compile Include="IGattServer.cs" />
-    <Compile Include="IGattServerFactory.cs" />
     <Compile Include="IGattService.cs" />
     <Compile Include="ReadRequest.cs" />
     <Compile Include="GattStatus.cs" />
@@ -55,6 +54,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IDevice.cs" />
     <Compile Include="DeviceSubscriptionEvent.cs" />
+    <Compile Include="AdapterStatus.cs" />
+    <Compile Include="IBleAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

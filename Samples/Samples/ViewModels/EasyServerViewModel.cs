@@ -2,9 +2,11 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Acr;
 using Acr.Ble.Server;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Samples.Services;
 using Xamarin.Forms;
@@ -15,40 +17,50 @@ namespace Samples.ViewModels
 {
     public class EasyServerViewModel : AbstractRootViewModel
     {
-        readonly IGattServerFactory factory;
+        readonly IBleAdapter adapter;
         IGattServer server;
         IDisposable notifyBroadcast;
 
 
-        public EasyServerViewModel(ICoreServices services, IGattServerFactory factory) : base(services)
+        public EasyServerViewModel(ICoreServices services, IBleAdapter adapter) : base(services)
         {
-            this.factory = factory;
-
-            this.ToggleServer = new Command(() =>
-            {
-                this.BuildServer();
-
-                if (this.server.IsRunning)
+            this.adapter = adapter;
+            adapter
+                .WhenAdapterStatusChanged()
+                .Subscribe(x => this.Status = x);
+            
+            this.ToggleServer = ReactiveCommand.CreateAsyncTask(
+                this.WhenAny(
+                    x => x.Status,
+                    x => x.Value == AdapterStatus.PoweredOn
+                ),
+                _ =>
                 {
-                    this.ServerText = "Start Server";
-                    this.server.Stop();
-                    this.OnEvent("Server Stopped");
-                }
-                else
-                {
+                    this.BuildServer();
 
-                    this.ServerText = "Stop Server";
-                    this.server.Start(new AdvertisementData
+                    if (this.server.IsRunning)
                     {
-                        LocalName = "Allan",
-                        IncludeDeviceName = true,
-                        IsConnectable = true,
-                        ManufacturerId = 127,
-                        ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
-                    });
-                    this.OnEvent("Server Started");
+                        this.ServerText = "Start Server";
+                        this.server.Stop();
+                        this.OnEvent("Server Stopped");
+                    }
+                    else
+                    {
+
+                        this.ServerText = "Stop Server";
+                        this.server.Start(new AdvertisementData
+                        {
+                            LocalName = "Allan",
+                            IncludeDeviceName = true,
+                            IsConnectable = true,
+                            ManufacturerId = 127,
+                            ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
+                        });
+                        this.OnEvent("Server Started");
+                    }
+                    return Task.FromResult(new object());
                 }
-            });
+            );
             this.Clear = new Command(() => this.Output = String.Empty);
         }
 
@@ -57,6 +69,7 @@ namespace Samples.ViewModels
         [Reactive] public string CharacteristicValue { get; set; }
         [Reactive] public string DescriptorValue { get; set; }
         [Reactive] public string Output { get; private set; }
+        [Reactive] public AdapterStatus Status { get; private set; }
         public ICommand ToggleServer { get; }
         public ICommand Clear { get; }
 
@@ -68,7 +81,7 @@ namespace Samples.ViewModels
 
             try
             {
-                this.server = this.factory.CreateInstance();
+                this.server = this.adapter.CreateGattServer();
                 var service = this.server.AddService(Guid.NewGuid(), true);
                 this.OnEvent($"Service Added - {service.Uuid}");
 

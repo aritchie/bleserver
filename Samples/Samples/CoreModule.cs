@@ -37,8 +37,8 @@ namespace Samples
                 .SingleInstance();
 
             builder
-                .Register(_ => BleServerService.Factory)
-                .As<IGattServerFactory>()
+                .Register(_ => BleAdapter.Current)
+                .As<IBleAdapter>()
                 .SingleInstance();
 
             builder

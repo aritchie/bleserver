@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.App;
 using Android.Bluetooth;
 using Android.Bluetooth.LE;
 using Android.Content;
 using Android.OS;
-using Java.Util;
 
 
 namespace Acr.Ble.Server
@@ -58,7 +58,7 @@ namespace Acr.Ble.Server
 
         protected override void RemoveNative(IGattService service)
         {
-            var nuuid = UUID.FromString(service.Uuid.ToString());
+            var nuuid = Java.Util.UUID.FromString(service.Uuid.ToString());
             var native = this.server.Services.FirstOrDefault(x => x.Uuid.Equals(nuuid));
             if (native != null)
                 this.server?.RemoveService(native);

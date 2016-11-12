@@ -63,6 +63,7 @@
     <Compile Include="GattService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="BleAdapterImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acr.Ble.Server.Interfaces\Acr.Ble.Server.Interfaces.csproj">

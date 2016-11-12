@@ -9,8 +9,7 @@
     <Import_RootNamespace>Acr.Ble.Server</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BleServerService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BleAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonAssemblyInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GattServerFactory.cs" />
   </ItemGroup>
 </Project>
