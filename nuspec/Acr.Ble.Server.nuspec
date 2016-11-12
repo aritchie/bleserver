@@ -31,6 +31,6 @@ Initial Release
         <file src="..\Acr.Ble.Server.Android\bin\Release\Acr.Ble.Server.*" target="lib\MonoAndroid10" />
 
         <!-- ios -->
-        <file src="..\Acr.Ble.Server.iOS\bin\iPhone\Release\Acr.Ble.Server.*" target="lib\Xamarin.iOS10" />
+        <file src="..\Acr.Ble.Server.iOS\bin\Release\Acr.Ble.Server.*" target="lib\Xamarin.iOS10" />
     </files>
 </package>

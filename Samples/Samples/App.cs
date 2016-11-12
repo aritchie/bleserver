@@ -19,22 +19,10 @@ namespace Samples
         {
             this.container = container;
 
-            this.MainPage = new NavigationPage(new TabbedPage
+            this.MainPage = new NavigationPage(new EasyServerPage
             {
-                Title = "BLE Server",
-                Children =
-                {
-                    new EasyServerPage
-                    {
-                        Title = "Quick Server",
-                        BindingContext = this.container.Resolve<EasyServerViewModel>()
-                    },
-                    new BeaconAdvertisementPage
-                    {
-                        Title = "Beacon Ads",
-                        BindingContext = this.container.Resolve<BeaconAdvertisementViewModel>()
-                    }
-                }
+                Title = "Quick Server",
+                BindingContext = this.container.Resolve<EasyServerViewModel>()
             });
         }
 
