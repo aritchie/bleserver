@@ -35,6 +35,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Acr.Ble.Server.Shared", "Ac
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3579BFA2-7091-4C81-9E54-D8EA65E6F664}"
 	ProjectSection(SolutionItems) = preProject
+		docs\advertising.md = docs\advertising.md
+		docs\characteristics.md = docs\characteristics.md
 		readme.md = readme.md
 	EndProjectSection
 EndProject
