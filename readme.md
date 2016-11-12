@@ -39,11 +39,12 @@ var notifyCharacteristic = service.AddCharacteristic
     GattPermissions.Read | GattPermissions.Write
 );
 
+IDisposable notifyBroadcast = null;
 notifyCharacteristic.WhenDeviceSubscriptionChanged().Subscribe(e =>
 {
     var @event = e.IsSubscribed ? "Subscribed" : "Unsubcribed";
 
-    if (this.notifyBroadcast == null)
+    if (notifyBroadcast == null)
     {
         this.notifyBroadcast = Observable
             .Interval(TimeSpan.FromSeconds(1))
@@ -60,9 +61,7 @@ notifyCharacteristic.WhenDeviceSubscriptionChanged().Subscribe(e =>
 
 characteristic.WhenReadReceived().Subscribe(x =>
 {
-    var write = this.CharacteristicValue;
-    if (write.IsEmpty())
-        write = "(NOTHING)";
+    var write = "HELLO";
 
     // you must set a reply value
     x.Value = Encoding.UTF8.GetBytes(write);
