@@ -103,13 +103,15 @@ namespace Acr.Ble.Server
                     {
                         if (native.Characteristic.Equals(this.Native))
                         {
-                            // TODO: is reply needed?
                             var device = new Device(native.Central);
                             var request = new WriteRequest(device, native.Value.ToArray(), (int)native.Offset, false);
                             ob.OnNext(request);
 
-                            var status = (CBATTError)Enum.Parse(typeof(CBATTError), request.Status.ToString());
-                            this.manager.RespondToRequest(native, status);
+                            //if (this.Properties.HasFlag(CharacteristicProperties.Indicate))
+                            //{
+                                var status = (CBATTError) Enum.Parse(typeof(CBATTError), request.Status.ToString());
+                                this.manager.RespondToRequest(native, status);
+                            //}
                         }
                     }
                 });

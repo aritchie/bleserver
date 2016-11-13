@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3579BFA2-7
 	ProjectSection(SolutionItems) = preProject
 		docs\advertising.md = docs\advertising.md
 		docs\characteristics.md = docs\characteristics.md
+		docs\faq.md = docs\faq.md
 		readme.md = readme.md
 	EndProjectSection
 EndProject

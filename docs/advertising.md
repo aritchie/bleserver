@@ -1,5 +1,21 @@
 # Advertising
 
-Advertising is severally downplayed by both operating systems.  On iOS, you are limited to advertising the local name and service UUIDs.
+Advertising is severally downplayed by both operating systems.  On iOS, you are limited to advertising the local name and service UUIDs
 
-However, you do not have access to things like 
+* On iOS, you can only advertise a custom local name and custom service UUIDs
+* On Android, things are different
+    * You cannot control the device naming
+    * TX Power (high, medium, low, balanced)
+    * Service Data
+    * Service UUIDs
+    * Specific Manufacturer Data
+
+```csharp
+
+var server = BleAdapter.Current.CreateGattServer();
+server.Start(new AdvertisementData
+{
+    LocalName = "TestServer",
+    ServiceUUIDs = new Guid[] { /* your custom UUIDs here */ }
+});
+```

@@ -71,7 +71,12 @@ characteristic.WhenReadReceived().Subscribe(x =>
 characteristic.WhenWriteReceived().Subscribe(x =>
 {
     var write = Encoding.UTF8.GetString(x.Value, 0, x.Value.Length);
-    // do something
+    // do something value
+});
+
+server.Start(new AdvertisementData
+{
+    LocalName = "TestServer"
 });
 ```
 
@@ -99,6 +104,8 @@ _Add the following to your Info.plist_
 
 
 ## HOW TO USE
-More documentation coming soon.  Here is an easy sample in the meantime
 
 [Sample](https://github.com/aritchie/bleserver/blob/master/Samples/Samples/ViewModels/EasyServerViewModel.cs)
+[Advertising](docs/advertising.md)
+[Characteristics](docs/characteristics.md)
+[Frequently Asked Questions](docs/faq.md)

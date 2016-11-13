@@ -28,7 +28,7 @@ namespace Samples.ViewModels
             adapter
                 .WhenAdapterStatusChanged()
                 .Subscribe(x => this.Status = x);
-            
+
             this.ToggleServer = ReactiveCommand.CreateAsyncTask(
                 this.WhenAny(
                     x => x.Status,
@@ -50,7 +50,7 @@ namespace Samples.ViewModels
                         this.ServerText = "Stop Server";
                         this.server.Start(new AdvertisementData
                         {
-                            LocalName = "Allan",
+                            LocalName = "TestServer",
                             ManufacturerId = 127,
                             ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
                         });
