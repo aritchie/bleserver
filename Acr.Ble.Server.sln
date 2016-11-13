@@ -36,9 +36,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3579BFA2-7091-4C81-9E54-D8EA65E6F664}"
 	ProjectSection(SolutionItems) = preProject
 		docs\advertising.md = docs\advertising.md
+		docs\changelog.md = docs\changelog.md
 		docs\characteristics.md = docs\characteristics.md
+		docs\descriptors.md = docs\descriptors.md
 		docs\faq.md = docs\faq.md
 		readme.md = readme.md
+		docs\services.md = docs\services.md
 	EndProjectSection
 EndProject
 Global

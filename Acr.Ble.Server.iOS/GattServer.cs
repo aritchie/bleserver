@@ -31,13 +31,13 @@ namespace Acr.Ble.Server
                 throw new ArgumentException("Invalid State - " + this.manager.State);
 
 
-            this.manager.AdvertisingStarted += (sender, e) => 
+            this.manager.AdvertisingStarted += (sender, e) =>
             {
                 if (e.Error != null)
                     System.Diagnostics.Debug.WriteLine("[ERROR] starting - " + e.Error.LocalizedDescription);
                 else
                     System.Diagnostics.Debug.WriteLine("Advertising State - " + this.manager.Advertising);
-                    
+
             };
 
             this.manager.StartAdvertising(new StartAdvertisingOptions

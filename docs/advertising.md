@@ -10,6 +10,9 @@ Advertising is severally downplayed by both operating systems.  On iOS, you are 
     * Service UUIDs
     * Specific Manufacturer Data
 
+For now, I have chosen to support only the same feature band as iOS
+
+
 ```csharp
 
 var server = BleAdapter.Current.CreateGattServer();
