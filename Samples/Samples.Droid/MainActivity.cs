@@ -1,8 +1,10 @@
 ﻿using System;
 using Acr.UserDialogs;
+using Android;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Support.V4.App;
 using Autofac;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -33,12 +35,12 @@ namespace Samples.Droid
             var container = builder.Build();
 
             this.LoadApplication(new App(container));
-        }
 
+            //ActivityCompat.RequestPermissions(this, new [] { Manifest.Permission.AccessCoarseLocation }, -1);
+        }
 
         //public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         //{
-        //    Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         //}
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Acr.Ble.Server.Internals;
 using Android.App;
 using Android.Bluetooth;
@@ -16,6 +17,7 @@ namespace Acr.Ble.Server
         readonly BluetoothManager manager;
         readonly AdvertisementCallbacks adCallbacks;
         readonly GattContext context;
+        readonly Subject<bool> runningSubj;
         BluetoothGattServer server;
 
 
@@ -24,6 +26,7 @@ namespace Acr.Ble.Server
             this.manager = (BluetoothManager)Application.Context.GetSystemService(Context.BluetoothService);
             this.adCallbacks = new AdvertisementCallbacks();
             this.context = new GattContext();
+            this.runningSubj = new Subject<bool>();
         }
 
 
@@ -31,8 +34,36 @@ namespace Acr.Ble.Server
         public override bool IsRunning => this.isRunning;
 
 
+        IObservable<bool> runningOb;
+        public override IObservable<bool> WhenRunningChanged()
+        {
+            this.runningOb = this.runningOb ?? Observable.Create<bool>(ob =>
+            {
+                this.adCallbacks.Failed = ob.OnError;
+                this.adCallbacks.Started = () => ob.OnNext(true);
+                var sub = this.runningSubj
+                    .AsObservable()
+                    .Subscribe(x => ob.OnNext(false));
+
+                return () => 
+                {
+                    sub.Dispose();
+                    this.adCallbacks.Failed = null;
+                    this.adCallbacks.Started = null;
+                };
+            })
+            .Publish()
+            .RefCount();
+            
+            return this.runningOb;
+        }
+       
+
         public override void Start(AdvertisementData adData)
         {
+            if (this.isRunning)
+                return;
+            
             this.StartAdvertising(adData);
             this.StartGatt();
             this.isRunning = true;
@@ -41,11 +72,15 @@ namespace Acr.Ble.Server
 
         public override void Stop()
         {
+            if (!this.isRunning)
+                return;
+            
             this.isRunning = false;
             this.manager.Adapter.BluetoothLeAdvertiser.StopAdvertising(this.adCallbacks);
             this.context.Server = null;
             this.server?.Close();
             this.server = null;
+            this.runningSubj.OnNext(false);
         }
 
 
@@ -79,23 +114,17 @@ namespace Acr.Ble.Server
                 .SetConnectable(true);
 
             var data = new AdvertiseData.Builder()
-                .SetIncludeDeviceName(adData.LocalName != null)
+                .SetIncludeDeviceName(true)
                 .SetIncludeTxPowerLevel(true);
             
-            if (adData.ManufacturerId != null)
-                data.AddManufacturerData(adData.ManufacturerId.Value, adData.ManufacturerData);
+            //if (adData.ManufacturerId != null)
+            //    data.AddManufacturerData(adData.ManufacturerId.Value, adData.ManufacturerData);
 
             foreach (var serviceUuid in adData.ServiceUuids)
             {
                 var uuid = ParcelUuid.FromString(serviceUuid.ToString());
                 data.AddServiceUuid(uuid);
             }
-
-            //foreach (var keyValue in adData.ServiceData)
-            //{
-            //    var uuid = ParcelUuid.FromString(keyValue.Key.ToString());
-            //    data.AddServiceData(uuid, keyValue.Value);
-            //}
 
             this.manager
                 .Adapter

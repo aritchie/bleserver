@@ -165,6 +165,9 @@ namespace Acr.Ble.Server
             return (sender, args) =>
             {
                 // on has a subcription or has none
+                if (!args.Characteristic.Equals(this.Native))
+                    return;
+                
                 if (subscribing)
                 {
                     var device = this.GetOrAdd(args.Central);

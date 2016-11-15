@@ -1,13 +1,14 @@
 using System;
 
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Plugin.CurrentActivity;
 
+
 namespace Samples.Droid
 {
-	//You can specify additional application information in this attribute
     [Application]
     public class MainApplication : Application, Application.IActivityLifecycleCallbacks
     {
@@ -20,8 +21,9 @@ namespace Samples.Droid
         {
             base.OnCreate();
             RegisterActivityLifecycleCallbacks(this);
-            //A great place to initialize Xamarin.Insights and Dependency Services!
+            this.StartService(new Intent(this, typeof(StickyService)));
         }
+
 
         public override void OnTerminate()
         {

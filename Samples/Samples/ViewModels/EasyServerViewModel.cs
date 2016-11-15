@@ -37,24 +37,16 @@ namespace Samples.ViewModels
                 _ =>
                 {
                     this.BuildServer();
-
                     if (this.server.IsRunning)
                     {
-                        this.ServerText = "Start Server";
                         this.server.Stop();
-                        this.OnEvent("Server Stopped");
                     }
                     else
                     {
-
-                        this.ServerText = "Stop Server";
                         this.server.Start(new AdvertisementData
                         {
-                            LocalName = "TestServer",
-                            ManufacturerId = 127,
-                            ManufacturerData = new byte[] { 0x1, 0x1, 0x1, 0x1 }
+                            LocalName = "TestServer"
                         });
-                        this.OnEvent("Server Started");
                     }
                     return Task.FromResult(new object());
                 }
@@ -81,22 +73,18 @@ namespace Samples.ViewModels
             {
                 this.server = this.adapter.CreateGattServer();
                 var service = this.server.AddService(Guid.NewGuid(), true);
-                this.OnEvent($"Service Added - {service.Uuid}");
 
                 var characteristic = service.AddCharacteristic(
                     Guid.NewGuid(),
                     CharacteristicProperties.Read | CharacteristicProperties.Write | CharacteristicProperties.WriteWithoutResponse,
                     GattPermissions.Read | GattPermissions.Write
                 );
-                this.OnEvent($"Characteristic Read/Write Added - {characteristic.Uuid}");
-
                 var notifyCharacteristic = service.AddCharacteristic
                 (
                     Guid.NewGuid(),
                     CharacteristicProperties.Indicate | CharacteristicProperties.Notify,
                     GattPermissions.Read | GattPermissions.Write
                 );
-                this.OnEvent($"Characteristic Notify Added - {notifyCharacteristic.Uuid}");
 
                 //var descriptor = characteristic.AddDescriptor(Guid.NewGuid(), Encoding.UTF8.GetBytes("Test Descriptor"));
 
@@ -137,6 +125,41 @@ namespace Samples.ViewModels
                     this.OnEvent($"Characteristic Write Received - {write}");
                 });
 
+                server
+                    .WhenRunningChanged()
+                    .Catch<bool, ArgumentException>(ex =>
+                    {
+                        this.Dialogs.Alert("Error Starting GATT Server - " + ex);
+                        return Observable.Return(false);
+                    })
+                    .Subscribe(started =>
+                    {
+                        if (!started)
+                        {
+                            this.ServerText = "Start Server";
+                            this.OnEvent("GATT Server Stopped");
+                        }
+                        else
+                        {
+                            this.ServerText = "Stop Server";
+                            this.OnEvent("GATT Server Started");
+                            foreach (var s in server.Services)
+                            {
+                                this.OnEvent($"Service {s.Uuid} Created");
+                                foreach (var ch in s.Characteristics)
+                                {
+                                    this.OnEvent($"Characteristic {ch.Uuid} Online - Properties {ch.Properties}");
+                                }
+                            }
+                        }
+                    });
+
+                server
+                    .WhenAnyCharacteristicSubscriptionChanged()
+                    .Subscribe(x => 
+                        this.OnEvent($"[WhenAnyCharacteristicSubscriptionChanged] UUID: {x.Characteristic.Uuid} - Device: {x.Device.Uuid} - Subscription: {x.IsSubscribing}")
+                    );
+                
                 //descriptor.WhenReadReceived().Subscribe(x =>
                 //    this.OnEvent("Descriptor Read Received")
                 //);
@@ -156,7 +179,7 @@ namespace Samples.ViewModels
         void OnEvent(string msg)
         {
             Device.BeginInvokeOnMainThread(() =>
-                this.Output += msg + Environment.NewLine
+                this.Output += msg + Environment.NewLine + Environment.NewLine
             );
         }
     }

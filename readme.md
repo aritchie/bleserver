@@ -3,12 +3,14 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 [![NuGet](https://img.shields.io/nuget/v/Acr.Ble.Server.svg?maxAge=2592000)](https://www.nuget.org/packages/Acr.Ble.Server/)
 
-[Change Log (Nov 12, 2016)](docs/changelog.md)
+[Change Log (Nov 14, 2016)](docs/changelog.md)
+
 
 ## PLATFORMS
 
 * Android 4.3+
 * iOS 8+
+
 
 ## FEATURES
 
@@ -19,6 +21,7 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
     * Notify & Broadcast
     * Manage Subscribers
     * Status Replies
+
 
 ## BASIC USE
 
@@ -93,6 +96,9 @@ _Add the following to your AndroidManifest.xml_
 ```xml
 <uses-permission android:name="android.permission.BLUETOOTH"/>
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+<!--necessary if you wish to broadcast device name-->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 ```
 
 ### iOS
