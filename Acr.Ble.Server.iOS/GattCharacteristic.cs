@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using CoreBluetooth;
 using Foundation;
@@ -48,21 +49,28 @@ namespace Acr.Ble.Server
         }
 
 
-        public override void Broadcast(byte[] value, params IDevice[] devices)
+        public override IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices)
         {
-            var data = NSData.FromArray(value);
-
-            if (devices == null || devices.Length > 0)
+            return Observable.Create<CharacteristicBroadcast>(ob =>
             {
-                this.manager.UpdateValue(data, this.Native, this.Native.SubscribedCentrals);
-                return;
-            }
-            var centrals = devices
-                .OfType<Device>()
-                .Select(x => x.Central)
-                .ToArray();
+                var data = NSData.FromArray(value);
 
-            this.manager.UpdateValue(data, this.Native, centrals);
+                var devs = devices.OfType<Device>().ToList();
+                if (devs.Count == 0)
+                {
+                    devs = this.SubscribedDevices.OfType<Device>().ToList();
+                }
+                this.manager.UpdateValue(data, this.Native, devs.Select(x => x.Central).ToArray());
+
+                var indicate = this.Properties.HasFlag(CharacteristicProperties.Indicate);
+                foreach (var dev in devs)
+                {
+                    ob.OnNext(new CharacteristicBroadcast(dev, this, value, indicate, true));
+                }
+                ob.OnCompleted();
+
+                return Disposable.Empty;
+            });
         }
 
 
@@ -107,11 +115,11 @@ namespace Acr.Ble.Server
                             var request = new WriteRequest(device, native.Value.ToArray(), (int)native.Offset, false);
                             ob.OnNext(request);
 
-                            //if (this.Properties.HasFlag(CharacteristicProperties.Indicate))
-                            //{
+                            if (this.Properties.HasFlag(CharacteristicProperties.Indicate))
+                            {
                                 var status = (CBATTError) Enum.Parse(typeof(CBATTError), request.Status.ToString());
                                 this.manager.RespondToRequest(native, status);
-                            //}
+                            }
                         }
                     }
                 });

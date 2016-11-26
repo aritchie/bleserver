@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
@@ -59,22 +60,33 @@ namespace Acr.Ble.Server
         }
 
 
-        public override void Broadcast(byte[] value, params IDevice[] devices)
+        public override IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices)
         {
-            this.Native.SetValue(value);
+            return Observable.Create<CharacteristicBroadcast>(ob =>
+            {
+                //var handler = new EventHandler<NotificationSentArgs>((sender, args) =>
+                //{
+                //});
+                //this.context.Callbacks.NotificationSent += handler;
 
-            if (devices == null || devices.Length == 0)
-                devices = this.subscribers.Values.ToArray();
+                this.Native.SetValue(value);
 
-            devices
-                .OfType<Device>()
-                .Select(x => x.Native)
-                .ToList()
-                .ForEach(x =>
-                {
-                    if (!this.context.Server.NotifyCharacteristicChanged(x, this.Native, true))
-                        WriteLine("Failed to trigger notification");
-                });
+                if (devices == null || devices.Length == 0)
+                    devices = this.subscribers.Values.ToArray();
+
+                var indicate = this.Properties.HasFlag(GattProperty.Indicate);
+                devices
+                    .OfType<Device>()
+                    .ToList()
+                    .ForEach(x =>
+                    {
+                        var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
+                        ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                    });
+
+                ob.OnCompleted();
+                return Disposable.Empty;
+            });
         }
 
 
@@ -94,7 +106,6 @@ namespace Acr.Ble.Server
                         }
                         else
                         {
-                            // TODO: not unsubscribes
                             var device = this.Remove(args.Device);
                             if (device != null)
                                 ob.OnNext(new DeviceSubscriptionEvent(device, false));

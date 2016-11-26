@@ -15,5 +15,6 @@ namespace Acr.Ble.Server
 
         public Guid Uuid { get; }
         public CBCentral Central { get; }
+        public object Context { get; set; }
     }
 }

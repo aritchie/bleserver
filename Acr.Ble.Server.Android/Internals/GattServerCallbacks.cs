@@ -1,5 +1,6 @@
 ﻿using System;
 using Android.Bluetooth;
+using AGattStatus = Android.Bluetooth.GattStatus;
 
 
 namespace Acr.Ble.Server.Internals
@@ -70,9 +71,10 @@ namespace Acr.Ble.Server.Internals
         }
 
 
-        //public override void OnNotificationSent(BluetoothDevice device, GattStatus status)
+        //public event EventHandler<NotificationSentArgs> NotificationSent;
+        //public override void OnNotificationSent(BluetoothDevice device, AGattStatus status)
         //{
-        //    base.OnNotificationSent(device, status);
+        //    this.NotificationSent?.Invoke(this, new NotificationSentArgs(device, status));
         //}
 
 

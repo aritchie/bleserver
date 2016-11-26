@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Acr.Ble.Server</id>
-        <version>1.0.1</version>
+        <version>1.1.0</version>
         <title>ACR Reactive BluetoothLE Server Plugin for Xamarin</title>
         <summary>Xplat Bluetooth LE Gatt Server</summary>
         <description>
@@ -19,6 +19,10 @@ PCL support for bluetooth low energy (BLE) gatt server
             <dependency id="rx-main" version="[2.2.5, 3)" />
         </dependencies>
         <releaseNotes>
+1.1.0
+[feature] characteristic broadcast now returns a hot observable for listening to successful broadcasts
+[feature] characteristic device now has a "Context" object on it that you can set to anything you want
+
 1.0.1
 [feature] New method for getting all subscribed devices from server instance
 [feature] Ability to observable all characteristics for a subscription

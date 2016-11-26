@@ -29,11 +29,7 @@ namespace Samples.ViewModels
                 .WhenAdapterStatusChanged()
                 .Subscribe(x => this.Status = x);
 
-            this.ToggleServer = ReactiveCommand.CreateAsyncTask(
-                this.WhenAny(
-                    x => x.Status,
-                    x => x.Value == AdapterStatus.PoweredOn
-                ),
+            this.ToggleServer = ReactiveCommand.CreateFromTask(
                 _ =>
                 {
                     this.BuildServer();
@@ -49,7 +45,11 @@ namespace Samples.ViewModels
                         });
                     }
                     return Task.FromResult(new object());
-                }
+                },
+                this.WhenAny(
+                    x => x.Status,
+                    x => x.Value == AdapterStatus.PoweredOn
+                )
             );
             this.Clear = new Command(() => this.Output = String.Empty);
         }

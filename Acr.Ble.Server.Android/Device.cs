@@ -31,5 +31,6 @@ namespace Acr.Ble.Server
 
         public BluetoothDevice Native { get; }
         public Guid Uuid => this.deviceUuidLazy.Value;
+        public object Context { get; set; }
     }
 }

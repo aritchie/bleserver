@@ -38,6 +38,7 @@
     <Compile Include="AbstractGattCharacteristic.cs" />
     <Compile Include="AbstractGattServer.cs" />
     <Compile Include="AbstractGattService.cs" />
+    <Compile Include="CharacteristicBroadcast.cs" />
     <Compile Include="GattPermissions.cs" />
     <Compile Include="AdvertisementData.cs" />
     <Compile Include="CharacteristicProperties.cs" />
