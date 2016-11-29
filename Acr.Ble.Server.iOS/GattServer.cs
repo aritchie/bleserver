@@ -42,12 +42,12 @@ namespace Acr.Ble.Server
                         ob.OnError(new ArgumentException(args.Error.LocalizedDescription));
                     }
                 });
-                var sub = this.runningSubj
-                    .AsObservable()
-                    .Subscribe(x => ob.OnNext(false));
-                
                 this.manager.AdvertisingStarted += handler;
 
+                var sub = this.runningSubj
+                    .AsObservable()
+                    .Subscribe(ob.OnNext);
+                
                 return () =>
                 {
                     this.manager.AdvertisingStarted -= handler;
@@ -71,16 +71,6 @@ namespace Acr.Ble.Server
 
             if (this.manager.State != CBPeripheralManagerState.PoweredOn)
                 throw new ArgumentException("Invalid State - " + this.manager.State);
-
-
-            this.manager.AdvertisingStarted += (sender, e) =>
-            {
-                if (e.Error != null)
-                    System.Diagnostics.Debug.WriteLine("[ERROR] starting - " + e.Error.LocalizedDescription);
-                else
-                    System.Diagnostics.Debug.WriteLine("Advertising State - " + this.manager.Advertising);
-
-            };
 
             this.manager.StartAdvertising(new StartAdvertisingOptions
             {
@@ -123,6 +113,7 @@ namespace Acr.Ble.Server
             
             this.manager.RemoveAllServices();
             this.manager.StopAdvertising();
+            this.runningSubj.OnNext(false);
         }
 
 

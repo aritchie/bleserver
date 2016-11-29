@@ -22,6 +22,7 @@ PCL support for bluetooth low energy (BLE) gatt server
 1.1.0
 [feature] characteristic broadcast now returns a hot observable for listening to successful broadcasts
 [feature] characteristic device now has a "Context" object on it that you can set to anything you want
+[fix][ios] WhenRunningChanged was not firing for stop
 
 1.0.1
 [feature] New method for getting all subscribed devices from server instance
