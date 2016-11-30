@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,16 +102,23 @@ namespace Samples.ViewModels
                             .Where(x => notifyCharacteristic.SubscribedDevices.Count > 0)
                             .Subscribe(_ =>
                             {
-                                var dt = DateTime.Now.ToString("g");
-                                var bytes = Encoding.UTF8.GetBytes(dt);
-                                notifyCharacteristic
-                                    .Broadcast(bytes)
-                                    .Subscribe(x => 
-                                    {
-                                        var state = x.Success ? "Successfully" : "Failed";
-                                        var data = Encoding.UTF8.GetString(x.Data, 0, x.Data.Length);
-                                        this.OnEvent($"{state} Broadcast {data} to device {x.Device.Uuid} from characteristic {x.Characteristic}");
-                                    });
+                                try
+                                {
+                                    var dt = DateTime.Now.ToString("g");
+                                    var bytes = Encoding.UTF8.GetBytes(dt);
+                                    notifyCharacteristic
+                                        .Broadcast(bytes)
+                                        .Subscribe(x =>
+                                        {
+                                            var state = x.Success ? "Successfully" : "Failed";
+                                            var data = Encoding.UTF8.GetString(x.Data, 0, x.Data.Length);
+                                            this.OnEvent($"{state} Broadcast {data} to device {x.Device.Uuid} from characteristic {x.Characteristic}");
+                                        });
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine("Error during broadcast: " + ex);
+                                }
                             });
                     }
                 });

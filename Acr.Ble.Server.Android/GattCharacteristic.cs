@@ -8,7 +8,6 @@ using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
 using Java.Util;
 using Observable = System.Reactive.Linq.Observable;
-using static System.Diagnostics.Debug;
 
 
 namespace Acr.Ble.Server
@@ -74,7 +73,7 @@ namespace Acr.Ble.Server
                 if (devices == null || devices.Length == 0)
                     devices = this.subscribers.Values.ToArray();
 
-                var indicate = this.Properties.HasFlag(GattProperty.Indicate);
+                var indicate = this.Properties.HasFlag(CharacteristicProperties.Indicate);
                 devices
                     .OfType<Device>()
                     .ToList()
