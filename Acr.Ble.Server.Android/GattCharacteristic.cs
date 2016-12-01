@@ -79,8 +79,11 @@ namespace Acr.Ble.Server
                     .ToList()
                     .ForEach(x =>
                     {
-                        var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
-                        ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                        lock (this.context.ServerReadWriteLock)
+                        {
+                            var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
+                            ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                        }
                     });
 
                 ob.OnCompleted();
@@ -152,14 +155,17 @@ namespace Acr.Ble.Server
 
                     if (request.IsReplyNeeded)
                     {
-                        this.context.Server.SendResponse
-                        (
-                            args.Device,
-                            args.RequestId,
-                            request.Status.ToNative(),
-                            request.Offset,
-                            request.Value
-                        );
+                        lock (this.context.ServerReadWriteLock)
+                        {
+                            this.context.Server.SendResponse
+                            (
+                                args.Device,
+                                args.RequestId,
+                                request.Status.ToNative(),
+                                request.Offset,
+                                request.Value
+                            );
+                        }
                     }
                 });
                 this.context.Callbacks.CharacteristicWrite += handler;
@@ -182,13 +188,16 @@ namespace Acr.Ble.Server
                     var request = new ReadRequest(device, args.Offset);
                     ob.OnNext(request);
 
-                    this.context.Server.SendResponse(
-                        args.Device,
-                        args.RequestId,
-                        request.Status.ToNative(),
-                        args.Offset,
-                        request.Value
-                    );
+                    lock (this.context.ServerReadWriteLock)
+                    {
+                        this.context.Server.SendResponse(
+                            args.Device,
+                            args.RequestId,
+                            request.Status.ToNative(),
+                            args.Offset,
+                            request.Value
+                        );
+                    }
                 });
                 this.context.Callbacks.CharacteristicRead += handler;
                 return () => this.context.Callbacks.CharacteristicRead -= handler;

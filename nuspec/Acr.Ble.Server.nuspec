@@ -19,6 +19,9 @@ PCL support for bluetooth low energy (BLE) gatt server
             <dependency id="rx-main" version="[2.2.5, 3)" />
         </dependencies>
         <releaseNotes>
+1.1.1
+[fix][droid] Reads, Writes, and Broadcasts can flood the BLE channel if all sent.  There is now a readwrite lock in place.
+
 1.1.0
 [feature] characteristic broadcast now returns a hot observable for listening to successful broadcasts
 [feature] characteristic device now has a "Context" object on it that you can set to anything you want
