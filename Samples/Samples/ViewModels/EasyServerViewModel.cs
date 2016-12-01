@@ -29,11 +29,7 @@ namespace Samples.ViewModels
                 .WhenAdapterStatusChanged()
                 .Subscribe(x => this.Status = x);
 
-            this.ToggleServer = ReactiveCommand.CreateAsyncTask(
-                this.WhenAny(
-                    x => x.Status,
-                    x => x.Value == AdapterStatus.PoweredOn
-                ),
+            this.ToggleServer = ReactiveCommand.CreateFromTask(
                 _ =>
                 {
                     this.BuildServer();
@@ -49,7 +45,11 @@ namespace Samples.ViewModels
                         });
                     }
                     return Task.FromResult(new object());
-                }
+                },
+                this.WhenAny(
+                    x => x.Status,
+                    x => x.Value == AdapterStatus.PoweredOn
+                )
             );
             this.Clear = new Command(() => this.Output = String.Empty);
         }
@@ -82,7 +82,7 @@ namespace Samples.ViewModels
                 var notifyCharacteristic = service.AddCharacteristic
                 (
                     Guid.NewGuid(),
-                    CharacteristicProperties.Indicate | CharacteristicProperties.Notify,
+                    CharacteristicProperties.Notify,
                     GattPermissions.Read | GattPermissions.Write
                 );
 
@@ -102,10 +102,23 @@ namespace Samples.ViewModels
                             .Where(x => notifyCharacteristic.SubscribedDevices.Count > 0)
                             .Subscribe(_ =>
                             {
-                                Debug.WriteLine("Sending Broadcast");
-                                var dt = DateTime.Now.ToString("g");
-                                var bytes = Encoding.UTF8.GetBytes(dt);
-                                notifyCharacteristic.Broadcast(bytes);
+                                try
+                                {
+                                    var dt = DateTime.Now.ToString("g");
+                                    var bytes = Encoding.UTF8.GetBytes(dt);
+                                    notifyCharacteristic
+                                        .Broadcast(bytes)
+                                        .Subscribe(x =>
+                                        {
+                                            var state = x.Success ? "Successfully" : "Failed";
+                                            var data = Encoding.UTF8.GetString(x.Data, 0, x.Data.Length);
+                                            this.OnEvent($"{state} Broadcast {data} to device {x.Device.Uuid} from characteristic {x.Characteristic}");
+                                        });
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine("Error during broadcast: " + ex);
+                                }
                             });
                     }
                 });
@@ -141,6 +154,9 @@ namespace Samples.ViewModels
                         }
                         else
                         {
+                            this.notifyBroadcast?.Dispose();
+                            this.notifyBroadcast = null;
+
                             this.ServerText = "Stop Server";
                             this.OnEvent("GATT Server Started");
                             foreach (var s in server.Services)

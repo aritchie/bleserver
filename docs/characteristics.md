@@ -84,4 +84,8 @@ notifyCharacteristic.Broadcast(bytes); // passing no devices will cause a mass b
 
 // or you can pass to a select list of subscribers
 notifyCharacteristic.Broadcast(bytes, notifyCharacteristic.SubscribedDevices.First());
+
+
+// you can also listen to the callbacks for each broadcast
+var sub = notifyCharacteristic.Broadcast(bytes).Subscribe(info => {});
 ```

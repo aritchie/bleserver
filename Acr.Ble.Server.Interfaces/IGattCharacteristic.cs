@@ -18,11 +18,14 @@ namespace Acr.Ble.Server
 
         /// <summary>
         /// Send null to broadcast to all
+        /// Subscription can be used to tell when one or all devices have been broadcast to
+        /// This is considered a HOT observable - it will run even if you don't listen
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="devices"></param>
-        void Broadcast(byte[] value, params IDevice[] devices);
+        /// <param name="devices">Don't pass any to broadcast to all devices, otherwise, pass your selected devices</param>
+        IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices);
 
+        
         IObservable<WriteRequest> WhenWriteReceived();
         IObservable<ReadRequest> WhenReadReceived();
         IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();
