@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Acr.Ble.Server</id>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <title>ACR Reactive BluetoothLE Server Plugin for Xamarin</title>
         <summary>Xplat Bluetooth LE Gatt Server</summary>
         <description>
@@ -19,7 +19,9 @@ PCL support for bluetooth low energy (BLE) gatt server
             <dependency id="rx-main" version="[2.2.5, 3)" />
         </dependencies>
         <releaseNotes>
-1.1.1
+1.2.0
+[breaking] Broadcast is now a void again, BroadcastObserve is the observable version
+[fix][ios] Write was not replying
 [fix][droid] Reads, Writes, and Broadcasts can flood the BLE channel if all sent.  There is now a readwrite lock in place.
 
 1.1.0

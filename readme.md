@@ -59,7 +59,7 @@ notifyCharacteristic.WhenDeviceSubscriptionChanged().Subscribe(e =>
                 Debug.WriteLine("Sending Broadcast");
                 var dt = DateTime.Now.ToString("g");
                 var bytes = Encoding.UTF8.GetBytes(dt);
-                notifyCharacteristic.Broadcast(bytes);
+                notifyCharacteristic.Broadcast(bytes).Subscribe();
             });
     }
 });

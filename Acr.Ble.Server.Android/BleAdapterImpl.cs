@@ -16,7 +16,7 @@ namespace Acr.Ble.Server
 
         public BleAdapterImpl()
         {
-            this.manager = (BluetoothManager)Application.Context.GetSystemService(Context.BluetoothService);            
+            this.manager = (BluetoothManager)Application.Context.GetSystemService(Context.BluetoothService);
         }
 
 

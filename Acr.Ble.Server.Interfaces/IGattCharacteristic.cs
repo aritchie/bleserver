@@ -23,9 +23,10 @@ namespace Acr.Ble.Server
         /// </summary>
         /// <param name="value"></param>
         /// <param name="devices">Don't pass any to broadcast to all devices, otherwise, pass your selected devices</param>
-        IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices);
+        IObservable<CharacteristicBroadcast> BroadcastObserve(byte[] value, params IDevice[] devices);
 
-        
+        void Broadcast(byte[] value, params IDevice[] device);
+
         IObservable<WriteRequest> WhenWriteReceived();
         IObservable<ReadRequest> WhenReadReceived();
         IObservable<DeviceSubscriptionEvent> WhenDeviceSubscriptionChanged();

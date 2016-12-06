@@ -77,15 +77,15 @@ notifyCharacteristic.SubscribedDevices
 ### Broadcasting
 
 Now that you have some subscribers, lets say hello every second just for fun
-
 ```csharp
-notifyCharacteristic.Broadcast(bytes); // passing no devices will cause a mass broadcast
-
+notifyCharacteristic.Broadcast(bytes).Subscribe(); // passing no devices will cause a mass broadcast
 
 // or you can pass to a select list of subscribers
 notifyCharacteristic.Broadcast(bytes, notifyCharacteristic.SubscribedDevices.First());
 
+// you can also listen to the callbacks for each broadcast
+notifyCharacteristic.Broadcast(bytes);
 
 // you can also listen to the callbacks for each broadcast
-var sub = notifyCharacteristic.Broadcast(bytes).Subscribe(info => {});
+notifyCharacteristic.BroadcastObserve(bytes).Subscribe(info => {});
 ```

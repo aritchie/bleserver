@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
@@ -59,35 +58,51 @@ namespace Acr.Ble.Server
         }
 
 
-        public override IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices)
+        public override void Broadcast(byte[] value, params IDevice[] devices)
+        {
+            this.Native.SetValue(value);
+
+            if (devices == null || devices.Length == 0)
+                devices = this.subscribers.Values.ToArray();
+
+            foreach (var x in devices.OfType<Device>())
+            {
+                lock (this.context.ServerReadWriteLock)
+                {
+                    this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, false);
+                }
+            }
+        }
+
+
+        public override IObservable<CharacteristicBroadcast> BroadcastObserve(byte[] value, params IDevice[] devices)
         {
             return Observable.Create<CharacteristicBroadcast>(ob =>
             {
-                //var handler = new EventHandler<NotificationSentArgs>((sender, args) =>
-                //{
-                //});
-                //this.context.Callbacks.NotificationSent += handler;
-
+                var cancel = false;
                 this.Native.SetValue(value);
 
                 if (devices == null || devices.Length == 0)
                     devices = this.subscribers.Values.ToArray();
 
                 var indicate = this.Properties.HasFlag(CharacteristicProperties.Indicate);
-                devices
-                    .OfType<Device>()
-                    .ToList()
-                    .ForEach(x =>
+                foreach (var x in devices.OfType<Device>())
+                {
+                    if (!cancel)
                     {
                         lock (this.context.ServerReadWriteLock)
                         {
-                            var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
-                            ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                            if (!cancel)
+                            {
+                                var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
+                                ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                            }
                         }
-                    });
+                    }
+                }
 
                 ob.OnCompleted();
-                return Disposable.Empty;
+                return () => cancel = true;
             });
         }
 
