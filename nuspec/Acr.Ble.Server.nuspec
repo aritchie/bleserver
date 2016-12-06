@@ -22,6 +22,7 @@ PCL support for bluetooth low energy (BLE) gatt server
 1.2.0
 [breaking] Broadcast is now a void again, BroadcastObserve is the observable version
 [fix][ios] Write was not replying
+[fix][droid] characteristics would sometimes not be sent with the service
 [fix][droid] Reads, Writes, and Broadcasts can flood the BLE channel if all sent.  There is now a readwrite lock in place.
 
 1.1.0

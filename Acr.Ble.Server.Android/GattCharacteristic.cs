@@ -17,6 +17,7 @@ namespace Acr.Ble.Server
         public static readonly UUID NotifyDescriptorUuid = UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
         public static readonly byte[] NotifyEnabledBytes = BluetoothGattDescriptor.EnableNotificationValue.ToArray();
         public static readonly byte[] NotifyDisableBytes = BluetoothGattDescriptor.DisableNotificationValue.ToArray();
+        public static readonly byte[] IndicateEnableBytes = BluetoothGattDescriptor.EnableIndicationValue.ToArray();
 
         public BluetoothGattCharacteristic Native { get; }
         public BluetoothGattDescriptor NotificationDescriptor { get; }
@@ -32,12 +33,12 @@ namespace Acr.Ble.Server
         {
             this.context = context;
             this.subscribers = new Dictionary<string, IDevice>();
-
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 properties.ToNative(),
                 permissions.ToNative()
             );
+
             this.NotificationDescriptor = new BluetoothGattDescriptor(
                 NotifyDescriptorId.ToUuid(),
                 GattDescriptorPermission.Write | GattDescriptorPermission.Read
@@ -116,7 +117,7 @@ namespace Acr.Ble.Server
                 {
                     if (args.Descriptor.Equals(this.NotificationDescriptor))
                     {
-                        if (args.Value.SequenceEqual(NotifyEnabledBytes))
+                        if (args.Value.SequenceEqual(NotifyEnabledBytes) || args.Value.SequenceEqual(IndicateEnableBytes))
                         {
                             var device = this.GetOrAdd(args.Device);
                             ob.OnNext(new DeviceSubscriptionEvent(device, true));

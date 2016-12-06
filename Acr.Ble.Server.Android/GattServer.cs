@@ -45,7 +45,7 @@ namespace Acr.Ble.Server
                     .AsObservable()
                     .Subscribe(x => ob.OnNext(false));
 
-                return () => 
+                return () =>
                 {
                     sub.Dispose();
                     this.adCallbacks.Failed = null;
@@ -54,16 +54,16 @@ namespace Acr.Ble.Server
             })
             .Publish()
             .RefCount();
-            
+
             return this.runningOb;
         }
-       
+
 
         public override void Start(AdvertisementData adData)
         {
             if (this.isRunning)
                 return;
-            
+
             this.StartAdvertising(adData);
             this.StartGatt();
             this.isRunning = true;
@@ -74,7 +74,7 @@ namespace Acr.Ble.Server
         {
             if (!this.isRunning)
                 return;
-            
+
             this.isRunning = false;
             this.manager.Adapter.BluetoothLeAdvertiser.StopAdvertising(this.adCallbacks);
             this.context.Server = null;
@@ -116,7 +116,7 @@ namespace Acr.Ble.Server
             var data = new AdvertiseData.Builder()
                 .SetIncludeDeviceName(true)
                 .SetIncludeTxPowerLevel(true);
-            
+
             //if (adData.ManufacturerId != null)
             //    data.AddManufacturerData(adData.ManufacturerId.Value, adData.ManufacturerData);
 
@@ -142,22 +142,17 @@ namespace Acr.Ble.Server
             this.server = this.manager.OpenGattServer(Application.Context, this.context.Callbacks);
             this.context.Server = this.server;
 
-            foreach (var service in this.Services)
+            foreach (var service in this.Services.OfType<GattService>())
             {
-                var nservice = ((GattService) service).Native;
-
-                foreach (var characteristic in service.Characteristics)
+                foreach (var characteristic in service.Characteristics.OfType<GattCharacteristic>())
                 {
-                    var ncharacter = ((GattCharacteristic) characteristic).Native;
-                    nservice.AddCharacteristic(ncharacter);
-
-                    foreach (var descriptor in characteristic.Descriptors)
+                    foreach (var descriptor in characteristic.Descriptors.OfType<GattDescriptor>())
                     {
-                        var ndescriptor = ((GattDescriptor) descriptor).Native;
-                        ncharacter.AddDescriptor(ndescriptor);
+                        characteristic.Native.AddDescriptor(descriptor.Native);
                     }
+                    service.Native.AddCharacteristic(characteristic.Native);
                 }
-                this.server.AddService(nservice);
+                this.server.AddService(service.Native);
             }
         }
     }
