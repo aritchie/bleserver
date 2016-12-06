@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Acr.Ble.Server.Internals;
 using Android.Bluetooth;
@@ -18,6 +17,7 @@ namespace Acr.Ble.Server
         public static readonly UUID NotifyDescriptorUuid = UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
         public static readonly byte[] NotifyEnabledBytes = BluetoothGattDescriptor.EnableNotificationValue.ToArray();
         public static readonly byte[] NotifyDisableBytes = BluetoothGattDescriptor.DisableNotificationValue.ToArray();
+        public static readonly byte[] IndicateEnableBytes = BluetoothGattDescriptor.EnableIndicationValue.ToArray();
 
         public BluetoothGattCharacteristic Native { get; }
         public BluetoothGattDescriptor NotificationDescriptor { get; }
@@ -33,12 +33,12 @@ namespace Acr.Ble.Server
         {
             this.context = context;
             this.subscribers = new Dictionary<string, IDevice>();
-
             this.Native = new BluetoothGattCharacteristic(
                 uuid.ToUuid(),
                 properties.ToNative(),
                 permissions.ToNative()
             );
+
             this.NotificationDescriptor = new BluetoothGattDescriptor(
                 NotifyDescriptorId.ToUuid(),
                 GattDescriptorPermission.Write | GattDescriptorPermission.Read
@@ -59,32 +59,51 @@ namespace Acr.Ble.Server
         }
 
 
-        public override IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices)
+        public override void Broadcast(byte[] value, params IDevice[] devices)
+        {
+            this.Native.SetValue(value);
+
+            if (devices == null || devices.Length == 0)
+                devices = this.subscribers.Values.ToArray();
+
+            foreach (var x in devices.OfType<Device>())
+            {
+                lock (this.context.ServerReadWriteLock)
+                {
+                    this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, false);
+                }
+            }
+        }
+
+
+        public override IObservable<CharacteristicBroadcast> BroadcastObserve(byte[] value, params IDevice[] devices)
         {
             return Observable.Create<CharacteristicBroadcast>(ob =>
             {
-                //var handler = new EventHandler<NotificationSentArgs>((sender, args) =>
-                //{
-                //});
-                //this.context.Callbacks.NotificationSent += handler;
-
+                var cancel = false;
                 this.Native.SetValue(value);
 
                 if (devices == null || devices.Length == 0)
                     devices = this.subscribers.Values.ToArray();
 
                 var indicate = this.Properties.HasFlag(CharacteristicProperties.Indicate);
-                devices
-                    .OfType<Device>()
-                    .ToList()
-                    .ForEach(x =>
+                foreach (var x in devices.OfType<Device>())
+                {
+                    if (!cancel)
                     {
-                        var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
-                        ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
-                    });
+                        lock (this.context.ServerReadWriteLock)
+                        {
+                            if (!cancel)
+                            {
+                                var result = this.context.Server.NotifyCharacteristicChanged(x.Native, this.Native, indicate);
+                                ob.OnNext(new CharacteristicBroadcast(x, this, value, indicate, result));
+                            }
+                        }
+                    }
+                }
 
                 ob.OnCompleted();
-                return Disposable.Empty;
+                return () => cancel = true;
             });
         }
 
@@ -98,7 +117,7 @@ namespace Acr.Ble.Server
                 {
                     if (args.Descriptor.Equals(this.NotificationDescriptor))
                     {
-                        if (args.Value.SequenceEqual(NotifyEnabledBytes))
+                        if (args.Value.SequenceEqual(NotifyEnabledBytes) || args.Value.SequenceEqual(IndicateEnableBytes))
                         {
                             var device = this.GetOrAdd(args.Device);
                             ob.OnNext(new DeviceSubscriptionEvent(device, true));
@@ -152,14 +171,17 @@ namespace Acr.Ble.Server
 
                     if (request.IsReplyNeeded)
                     {
-                        this.context.Server.SendResponse
-                        (
-                            args.Device,
-                            args.RequestId,
-                            request.Status.ToNative(),
-                            request.Offset,
-                            request.Value
-                        );
+                        lock (this.context.ServerReadWriteLock)
+                        {
+                            this.context.Server.SendResponse
+                            (
+                                args.Device,
+                                args.RequestId,
+                                request.Status.ToNative(),
+                                request.Offset,
+                                request.Value
+                            );
+                        }
                     }
                 });
                 this.context.Callbacks.CharacteristicWrite += handler;
@@ -182,13 +204,16 @@ namespace Acr.Ble.Server
                     var request = new ReadRequest(device, args.Offset);
                     ob.OnNext(request);
 
-                    this.context.Server.SendResponse(
-                        args.Device,
-                        args.RequestId,
-                        request.Status.ToNative(),
-                        args.Offset,
-                        request.Value
-                    );
+                    lock (this.context.ServerReadWriteLock)
+                    {
+                        this.context.Server.SendResponse(
+                            args.Device,
+                            args.RequestId,
+                            request.Status.ToNative(),
+                            args.Offset,
+                            request.Value
+                        );
+                    }
                 });
                 this.context.Callbacks.CharacteristicRead += handler;
                 return () => this.context.Callbacks.CharacteristicRead -= handler;

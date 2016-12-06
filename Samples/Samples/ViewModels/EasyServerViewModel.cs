@@ -107,7 +107,7 @@ namespace Samples.ViewModels
                                     var dt = DateTime.Now.ToString("g");
                                     var bytes = Encoding.UTF8.GetBytes(dt);
                                     notifyCharacteristic
-                                        .Broadcast(bytes)
+                                        .BroadcastObserve(bytes)
                                         .Subscribe(x =>
                                         {
                                             var state = x.Success ? "Successfully" : "Failed";
@@ -172,10 +172,10 @@ namespace Samples.ViewModels
 
                 server
                     .WhenAnyCharacteristicSubscriptionChanged()
-                    .Subscribe(x => 
+                    .Subscribe(x =>
                         this.OnEvent($"[WhenAnyCharacteristicSubscriptionChanged] UUID: {x.Characteristic.Uuid} - Device: {x.Device.Uuid} - Subscription: {x.IsSubscribing}")
                     );
-                
+
                 //descriptor.WhenReadReceived().Subscribe(x =>
                 //    this.OnEvent("Descriptor Read Received")
                 //);

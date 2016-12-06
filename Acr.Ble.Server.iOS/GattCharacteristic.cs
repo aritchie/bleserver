@@ -49,7 +49,19 @@ namespace Acr.Ble.Server
         }
 
 
-        public override IObservable<CharacteristicBroadcast> Broadcast(byte[] value, params IDevice[] devices)
+        public override void Broadcast(byte[] value, params IDevice[] devices)
+        {
+            var data = NSData.FromArray(value);
+            var devs = devices.OfType<Device>().ToList();
+            if (devs.Count == 0)
+            {
+                devs = this.SubscribedDevices.OfType<Device>().ToList();
+            }
+            this.manager.UpdateValue(data, this.Native, devs.Select(x => x.Central).ToArray());
+        }
+
+
+        public override IObservable<CharacteristicBroadcast> BroadcastObserve(byte[] value, params IDevice[] devices)
         {
             return Observable.Create<CharacteristicBroadcast>(ob =>
             {
@@ -107,6 +119,7 @@ namespace Acr.Ble.Server
             {
                 var handler = new EventHandler<CBATTRequestsEventArgs>((sender, args) =>
                 {
+                    var writeWithResponse = this.Properties.HasFlag(CharacteristicProperties.Write);
                     foreach (var native in args.Requests)
                     {
                         if (native.Characteristic.Equals(this.Native))
@@ -115,7 +128,7 @@ namespace Acr.Ble.Server
                             var request = new WriteRequest(device, native.Value.ToArray(), (int)native.Offset, false);
                             ob.OnNext(request);
 
-                            if (this.Properties.HasFlag(CharacteristicProperties.Indicate))
+                            if (writeWithResponse)
                             {
                                 var status = (CBATTError) Enum.Parse(typeof(CBATTError), request.Status.ToString());
                                 this.manager.RespondToRequest(native, status);
@@ -175,7 +188,7 @@ namespace Acr.Ble.Server
                 // on has a subcription or has none
                 if (!args.Characteristic.Equals(this.Native))
                     return;
-                
+
                 if (subscribing)
                 {
                     var device = this.GetOrAdd(args.Central);
