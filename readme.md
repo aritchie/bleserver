@@ -3,7 +3,7 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 [![NuGet](https://img.shields.io/nuget/v/Acr.Ble.Server.svg?maxAge=2592000)](https://www.nuget.org/packages/Acr.Ble.Server/)
 
-[Change Log (Nov 26, 2016)](docs/changelog.md)
+[Change Log (Dec 6, 2016)](docs/changelog.md)
 
 
 ## PLATFORMS
