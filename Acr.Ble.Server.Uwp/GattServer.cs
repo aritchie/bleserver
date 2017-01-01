@@ -5,6 +5,11 @@ namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
+        public override IObservable<bool> WhenRunningChanged()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool IsRunning { get; }
         public override void Start(AdvertisementData adData)
         {
@@ -32,3 +37,83 @@ namespace Acr.Ble.Server
         }
     }
 }
+/*
+using System;
+using System.Linq;
+using Windows.ApplicationModel.Background;
+using Windows.Devices.Bluetooth.Advertisement;
+using Windows.Devices.Radios;
+using Windows.Storage.Streams;
+
+
+namespace Plugin.BeaconAds
+{
+    public class BeaconAdvertiser : IBeaconAdvertiser
+    {
+        readonly BluetoothLEAdvertisementPublisher publiser;
+        readonly Lazy<Radio> radio;
+
+
+        public BeaconAdvertiser()
+        {
+            this.publiser = new BluetoothLEAdvertisementPublisher();
+            this.radio = new Lazy<Radio>(() =>
+                Radio
+                    .GetRadiosAsync()
+                    .AsTask()
+                    .Result
+                    .FirstOrDefault(x => x.Kind == RadioKind.Bluetooth)
+            );
+        }
+
+
+        public AdapterStatus AdapterStatus
+        {
+            get
+            {
+                if (this.radio.Value == null)
+                    return AdapterStatus.Unsupported;
+
+                switch (this.radio.Value.State)
+                {
+                    case RadioState.Disabled:
+                    case RadioState.Off:
+                        return AdapterStatus.PoweredOff;
+
+                    case RadioState.Unknown:
+                        return AdapterStatus.Unknown;
+
+                    default:
+                        return AdapterStatus.PoweredOn;
+                }
+            }
+        }
+
+
+        public Beacon AdvertisedBeacon { get; private set; }
+
+
+        public void Start(Beacon beacon)
+        {
+
+
+            var writer = new DataWriter();
+            writer.WriteBytes(beacon.ToIBeaconPacket(10));
+            var md = new BluetoothLEManufacturerData(76, writer.DetachBuffer());
+            this.publiser.Advertisement.ManufacturerData.Add(md);
+            this.publiser.Start();
+
+            //var trigger = new BluetoothLEAdvertisementPublisherTrigger();
+            //trigger.Advertisement.ManufacturerData.Add(md);
+            this.AdvertisedBeacon = beacon;
+        }
+
+
+        public void Stop()
+        {
+            this.publiser.Stop();
+        }
+    }
+}
+
+     */

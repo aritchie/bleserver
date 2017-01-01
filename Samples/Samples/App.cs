@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Acr;
 using Autofac;
 using Samples.Pages.Server;
-using Samples.Services;
 using Samples.ViewModels;
 using Xamarin.Forms;
 
@@ -24,20 +23,6 @@ namespace Samples
                 Title = "Quick Server",
                 BindingContext = this.container.Resolve<EasyServerViewModel>()
             });
-        }
-
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            this.container.Resolve<IEnumerable<IAppLifecycle>>().Each(x => x.OnForeground());
-        }
-
-
-        protected override void OnSleep()
-        {
-            base.OnSleep();
-            this.container.Resolve<IEnumerable<IAppLifecycle>>().Each(x => x.OnBackground());
         }
     }
 }

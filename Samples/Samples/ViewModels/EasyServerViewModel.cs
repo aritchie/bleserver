@@ -6,25 +6,27 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Acr;
 using Acr.Ble.Server;
+using Acr.UserDialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Samples.Services;
 using Xamarin.Forms;
 using Command = Acr.Command;
 
 
 namespace Samples.ViewModels
 {
-    public class EasyServerViewModel : AbstractRootViewModel
+    public class EasyServerViewModel : AbstractViewModel
     {
         readonly IBleAdapter adapter;
+        readonly IUserDialogs dialogs;
         IGattServer server;
         IDisposable notifyBroadcast;
 
 
-        public EasyServerViewModel(ICoreServices services, IBleAdapter adapter) : base(services)
+        public EasyServerViewModel(IUserDialogs dialogs, IBleAdapter adapter)
         {
             this.adapter = adapter;
+            this.dialogs = dialogs;
             adapter
                 .WhenAdapterStatusChanged()
                 .Subscribe(x => this.Status = x);
@@ -142,7 +144,7 @@ namespace Samples.ViewModels
                     .WhenRunningChanged()
                     .Catch<bool, ArgumentException>(ex =>
                     {
-                        this.Dialogs.Alert("Error Starting GATT Server - " + ex);
+                        this.dialogs.Alert("Error Starting GATT Server - " + ex);
                         return Observable.Return(false);
                     })
                     .Subscribe(started =>
@@ -187,7 +189,7 @@ namespace Samples.ViewModels
             }
             catch (Exception ex)
             {
-                this.Dialogs.Alert("Error building gatt server - " + ex);
+                this.dialogs.Alert("Error building gatt server - " + ex);
             }
         }
 
