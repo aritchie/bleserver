@@ -11,7 +11,7 @@ namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
-        readonly IList<IGattService> services = new List<IGattService>();
+        readonly IList<IGattService> services;
         readonly CBPeripheralManager manager;
         readonly Subject<bool> runningSubj;
 
@@ -20,6 +20,7 @@ namespace Acr.Ble.Server
         {
             this.manager = manager;
             this.runningSubj = new Subject<bool>();
+            this.services = new List<IGattService>();
         }
 
 
@@ -31,13 +32,13 @@ namespace Acr.Ble.Server
         {
             this.runningOb = this.runningOb ?? Observable.Create<bool>(ob =>
             {
-                var handler = new EventHandler<NSErrorEventArgs>((sender, args) => 
+                var handler = new EventHandler<NSErrorEventArgs>((sender, args) =>
                 {
                     if (args.Error == null)
                     {
                         ob.OnNext(true);
                     }
-                    else 
+                    else
                     {
                         ob.OnError(new ArgumentException(args.Error.LocalizedDescription));
                     }
@@ -47,7 +48,7 @@ namespace Acr.Ble.Server
                 var sub = this.runningSubj
                     .AsObservable()
                     .Subscribe(ob.OnNext);
-                
+
                 return () =>
                 {
                     this.manager.AdvertisingStarted -= handler;
@@ -56,7 +57,7 @@ namespace Acr.Ble.Server
             })
             .Publish()
             .RefCount();
-            
+
             return this.runningOb;
         }
 
@@ -65,7 +66,7 @@ namespace Acr.Ble.Server
         {
             if (this.manager.Advertising)
                 return;
-            
+
             if (CBPeripheralManager.AuthorizationStatus != CBPeripheralManagerAuthorizationStatus.Authorized)
                 throw new ArgumentException("Permission Denied - " + CBPeripheralManager.AuthorizationStatus);
 
@@ -110,7 +111,7 @@ namespace Acr.Ble.Server
         {
             if (!this.manager.Advertising)
                 return;
-            
+
             this.manager.RemoveAllServices();
             this.manager.StopAdvertising();
             this.runningSubj.OnNext(false);
