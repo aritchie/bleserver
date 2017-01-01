@@ -20,7 +20,7 @@ namespace Acr.Ble.Server
         }
 
 
-        public AdapterStatus AdapterStatus
+        public AdapterStatus Status
         {
             get
             {
@@ -28,7 +28,7 @@ namespace Acr.Ble.Server
                     return AdapterStatus.Unsupported;
 
                 //if (!Application.Context.PackageManager.HasSystemFeature(PackageManager.FeatureBluetoothLe))
-                //    return AdapterStatus.Unsupported;
+                //    return Status.Unsupported;
 
                 if (this.manager?.Adapter == null)
                     return AdapterStatus.Unsupported;
@@ -57,14 +57,14 @@ namespace Acr.Ble.Server
 
 
         IObservable<AdapterStatus> statusOb;
-        public IObservable<AdapterStatus> WhenAdapterStatusChanged()
+        public IObservable<AdapterStatus> WhenStatusChanged()
         {
             this.statusOb = this.statusOb ?? Observable.Create<AdapterStatus>(ob =>
             {
-                ob.OnNext(this.AdapterStatus);
+                ob.OnNext(this.Status);
                 var aob = BluetoothObservables
                     .WhenAdapterStatusChanged()
-                    .Subscribe(_ => ob.OnNext(this.AdapterStatus));
+                    .Subscribe(_ => ob.OnNext(this.Status));
 
                 return aob.Dispose;
             })

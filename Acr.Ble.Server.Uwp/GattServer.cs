@@ -10,26 +10,31 @@ namespace Acr.Ble.Server
             throw new NotImplementedException();
         }
 
+
         public override bool IsRunning { get; }
         public override void Start(AdvertisementData adData)
         {
             throw new NotImplementedException();
         }
 
+
         public override void Stop()
         {
             throw new NotImplementedException();
         }
+
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
             throw new NotImplementedException();
         }
 
+
         protected override void ClearNative()
         {
             throw new NotImplementedException();
         }
+
 
         protected override void RemoveNative(IGattService service)
         {
@@ -67,24 +72,24 @@ namespace Plugin.BeaconAds
         }
 
 
-        public AdapterStatus AdapterStatus
+        public Status Status
         {
             get
             {
                 if (this.radio.Value == null)
-                    return AdapterStatus.Unsupported;
+                    return Status.Unsupported;
 
                 switch (this.radio.Value.State)
                 {
                     case RadioState.Disabled:
                     case RadioState.Off:
-                        return AdapterStatus.PoweredOff;
+                        return Status.PoweredOff;
 
                     case RadioState.Unknown:
-                        return AdapterStatus.Unknown;
+                        return Status.Unknown;
 
                     default:
-                        return AdapterStatus.PoweredOn;
+                        return Status.PoweredOn;
                 }
             }
         }

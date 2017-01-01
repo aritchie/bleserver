@@ -28,7 +28,7 @@ namespace Samples.ViewModels
             this.adapter = adapter;
             this.dialogs = dialogs;
             adapter
-                .WhenAdapterStatusChanged()
+                .WhenStatusChanged()
                 .Subscribe(x => this.Status = x);
 
             this.ToggleServer = ReactiveCommand.CreateFromTask(

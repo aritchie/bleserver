@@ -10,7 +10,7 @@ namespace Acr.Ble.Server
         readonly CBPeripheralManager manager = new CBPeripheralManager();
 
 
-        public AdapterStatus AdapterStatus
+        public AdapterStatus Status
         {
             get
             {
@@ -40,12 +40,12 @@ namespace Acr.Ble.Server
 
 
         IObservable<AdapterStatus> statusOb;
-        public IObservable<AdapterStatus> WhenAdapterStatusChanged()
+        public IObservable<AdapterStatus> WhenStatusChanged()
         {
             this.statusOb = this.statusOb ?? Observable.Create<AdapterStatus>(ob =>
             {
-                ob.OnNext(this.AdapterStatus);
-                var handler = new EventHandler((sender, args) => ob.OnNext(this.AdapterStatus));
+                ob.OnNext(this.Status);
+                var handler = new EventHandler((sender, args) => ob.OnNext(this.Status));
                 this.manager.StateUpdated += handler;
 
                 return () => this.manager.StateUpdated -= handler;
