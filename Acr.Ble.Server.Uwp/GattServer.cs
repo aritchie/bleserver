@@ -1,26 +1,54 @@
 ﻿using System;
+using System.Reactive.Linq;
+using Windows.Devices.Bluetooth.Advertisement;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Foundation;
 
 
 namespace Acr.Ble.Server
 {
     public class GattServer : AbstractGattServer
     {
-        public override IObservable<bool> WhenRunningChanged()
+        readonly BluetoothLEAdvertisementPublisher publisher;
+
+
+        public GattServer()
         {
-            throw new NotImplementedException();
+            this.publisher = new BluetoothLEAdvertisementPublisher();
         }
 
 
-        public override bool IsRunning { get; }
+        IObservable<bool> runOb;
+        public override IObservable<bool> WhenRunningChanged()
+        {
+            this.runOb = this.runOb ?? Observable.Create<bool>(ob =>
+            {
+                ob.OnNext(this.IsRunning);
+                var handler = new TypedEventHandler<BluetoothLEAdvertisementPublisher, BluetoothLEAdvertisementPublisherStatusChangedEventArgs>((sender, args) =>
+                    ob.OnNext(this.IsRunning)
+                );
+                this.publisher.StatusChanged += handler;
+                return () => this.publisher.StatusChanged -= handler;
+            })
+            .Repeat(1);
+
+            return this.runOb;
+        }
+
+
+        public override bool IsRunning => this.publisher.Status == BluetoothLEAdvertisementPublisherStatus.Started;
+
+
         public override void Start(AdvertisementData adData)
         {
-            throw new NotImplementedException();
+            //new GattDeviceService()
+
         }
 
 
         public override void Stop()
         {
-            throw new NotImplementedException();
+            this.publisher.Stop();
         }
 
 
