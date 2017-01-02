@@ -46,6 +46,7 @@
     <Compile Include="IGattDescriptor.cs" />
     <Compile Include="IGattServer.cs" />
     <Compile Include="IGattService.cs" />
+    <Compile Include="ManufacturerData.cs" />
     <Compile Include="ReadRequest.cs" />
     <Compile Include="GattStatus.cs" />
     <Compile Include="WriteRequest.cs" />

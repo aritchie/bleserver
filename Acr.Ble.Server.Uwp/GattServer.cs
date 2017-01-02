@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Foundation;
+using Windows.Storage.Streams;
 
 
 namespace Acr.Ble.Server
@@ -24,8 +25,8 @@ namespace Acr.Ble.Server
             this.runOb = this.runOb ?? Observable.Create<bool>(ob =>
             {
                 ob.OnNext(this.IsRunning);
-                var handler = new TypedEventHandler<BluetoothLEAdvertisementPublisher, BluetoothLEAdvertisementPublisherStatusChangedEventArgs>((sender, args) =>
-                    ob.OnNext(this.IsRunning)
+                var handler = new TypedEventHandler<BluetoothLEAdvertisementPublisher, BluetoothLEAdvertisementPublisherStatusChangedEventArgs>(
+                    (sender, args) => ob.OnNext(this.IsRunning)
                 );
                 this.publisher.StatusChanged += handler;
                 return () => this.publisher.StatusChanged -= handler;
@@ -41,8 +42,27 @@ namespace Acr.Ble.Server
 
         public override void Start(AdvertisementData adData)
         {
-            //new GattDeviceService()
+            this.publisher.Advertisement.Flags = BluetoothLEAdvertisementFlags.ClassicNotSupported;
+            this.publisher.Advertisement.ManufacturerData.Clear();
+            this.publisher.Advertisement.ServiceUuids.Clear();
 
+            if (adData.ManufacturerData != null)
+            {
+                using (var writer = new DataWriter())
+                {
+                    writer.WriteBytes(adData.ManufacturerData.Data);
+                    var md = new BluetoothLEManufacturerData(adData.ManufacturerData.CompanyId, writer.DetachBuffer());
+                    this.publisher.Advertisement.ManufacturerData.Add(md);
+                }
+            }
+            foreach (var serviceUuid in adData.ServiceUuids)
+            {
+                this.publisher.Advertisement.ServiceUuids.Add(serviceUuid);
+            }
+            this.publisher.Start();
+            //GattCharacteristicUuids.
+            //GattServiceUuids.AlertNotification
+            //new GattReliableWriteTransaction().Write/Commit
         }
 
 
