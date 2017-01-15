@@ -4,7 +4,7 @@ using Android.Bluetooth;
 
 namespace Acr.Ble.Server
 {
-    public class GattDescriptor : AbstractGattDescriptor
+    public class GattDescriptor : AbstractGattDescriptor, IDroidGattDescriptor
     {
         public GattDescriptor(IGattCharacteristic characteristic,
                               Guid descriptorUuid,

@@ -79,5 +79,7 @@ namespace Acr.Ble.Server
         {
             return new GattServer();
         }
+
+        public bool IsAdvertisementManufacturerDataSupported { get; } = true;
     }
 }

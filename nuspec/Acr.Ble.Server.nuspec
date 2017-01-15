@@ -2,8 +2,8 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Acr.Ble.Server</id>
-        <version>1.2.0</version>
-        <title>ACR Reactive BluetoothLE Server Plugin for Xamarin</title>
+        <version>2.0.0</version>
+        <title>ACR Reactive BluetoothLE GATT Server Plugin for Xamarin and Windows</title>
         <summary>Xplat Bluetooth LE Gatt Server</summary>
         <description>
 PCL support for bluetooth low energy (BLE) gatt server
@@ -14,11 +14,16 @@ PCL support for bluetooth low energy (BLE) gatt server
         <licenseUrl>https://github.com/aritchie/bluetoothle/LICENSE.md</licenseUrl>
         <projectUrl>https://github.com/aritchie/bleserver</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <tags>ios android xamarin xam.pcl server ble bluetooth gatt</tags>
+        <tags>ios android windows xamarin xam.pcl server ble bluetooth gatt</tags>
         <dependencies>
             <dependency id="rx-main" version="[2.2.5, 3)" />
         </dependencies>
         <releaseNotes>
+2.0
+[feature] UWP Support!
+[feature] Advertise manufacturer data on Android and Windows
+[breaking] Start is now async
+
 1.2.0
 [breaking] Broadcast is now a void again, BroadcastObserve is the observable version
 [fix][ios] Write was not replying
@@ -49,5 +54,8 @@ Initial Release
 
         <!-- ios -->
         <file src="..\Acr.Ble.Server.iOS\bin\Release\Acr.Ble.Server.*" target="lib\Xamarin.iOS10" />
+
+        <!-- uwp -->
+        <file src="..\Acr.Ble.Server.Uwp\bin\Release\Acr.Ble.Server.*" target="lib\uap10.0" />
     </files>
 </package>

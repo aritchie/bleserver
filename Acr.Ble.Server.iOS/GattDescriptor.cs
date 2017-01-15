@@ -1,12 +1,11 @@
 using System;
-using System.Reactive.Linq;
 using CoreBluetooth;
 using Foundation;
 
 
 namespace Acr.Ble.Server
 {
-    public class GattDescriptor : AbstractGattDescriptor
+    public class GattDescriptor : AbstractGattDescriptor, IIosGattDescriptor
     {
         public CBMutableDescriptor Native { get; }
 

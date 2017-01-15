@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Foundation;
@@ -11,6 +14,7 @@ namespace Acr.Ble.Server
     public class GattServer : AbstractGattServer
     {
         readonly BluetoothLEAdvertisementPublisher publisher;
+        GattServiceProviderResult server;
 
 
         public GattServer()
@@ -40,7 +44,7 @@ namespace Acr.Ble.Server
         public override bool IsRunning => this.publisher.Status == BluetoothLEAdvertisementPublisherStatus.Started;
 
 
-        public override void Start(AdvertisementData adData)
+        public override async Task Start(AdvertisementData adData)
         {
             this.publisher.Advertisement.Flags = BluetoothLEAdvertisementFlags.ClassicNotSupported;
             this.publisher.Advertisement.ManufacturerData.Clear();
@@ -55,14 +59,14 @@ namespace Acr.Ble.Server
                     this.publisher.Advertisement.ManufacturerData.Add(md);
                 }
             }
+
             foreach (var serviceUuid in adData.ServiceUuids)
             {
                 this.publisher.Advertisement.ServiceUuids.Add(serviceUuid);
+
             }
+            await this.StartGatt();
             this.publisher.Start();
-            //GattCharacteristicUuids.
-            //GattServiceUuids.AlertNotification
-            //new GattReliableWriteTransaction().Write/Commit
         }
 
 
@@ -71,6 +75,14 @@ namespace Acr.Ble.Server
             this.publisher.Stop();
         }
 
+
+        protected virtual async Task StartGatt()
+        {
+            foreach (var service in this.Services.OfType<IUwpGattService>())
+            {
+                await service.Init();
+            }
+        }
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using CoreBluetooth;
 using Foundation;
 
@@ -62,10 +63,10 @@ namespace Acr.Ble.Server
         }
 
 
-        public override void Start(AdvertisementData adData)
+        public override Task Start(AdvertisementData adData)
         {
             if (this.manager.Advertising)
-                return;
+                return Task.CompletedTask;
 
             if (CBPeripheralManager.AuthorizationStatus != CBPeripheralManagerAuthorizationStatus.Authorized)
                 throw new ArgumentException("Permission Denied - " + CBPeripheralManager.AuthorizationStatus);
@@ -83,17 +84,17 @@ namespace Acr.Ble.Server
             });
 
             this.services
-                .Cast<GattService>()
+                .Cast<IIosGattService>()
                 .Select(x =>
                 {
                     x.Native.Characteristics = x
                         .Characteristics
-                        .OfType<GattCharacteristic>()
+                        .OfType<IIosGattCharacteristic>()
                         .Select(y =>
                         {
                             y.Native.Descriptors = y
                                 .Descriptors
-                                .OfType<GattDescriptor>()
+                                .OfType<IIosGattDescriptor>()
                                 .Select(z => z.Native)
                                 .ToArray();
                             return y.Native;
@@ -104,6 +105,8 @@ namespace Acr.Ble.Server
                 })
                 .ToList()
                 .ForEach(this.manager.AddService);
+
+            return Task.CompletedTask;
         }
 
 
@@ -131,8 +134,8 @@ namespace Acr.Ble.Server
         {
             if (this.services.Remove(service))
             {
-                var native = ((GattService)service).Native;
-                //this.context.Manager?.RemoveService(native);
+                var native = ((IIosGattService)service).Native;
+                this.manager.RemoveService(native);
             }
         }
 
@@ -140,7 +143,7 @@ namespace Acr.Ble.Server
         protected override void ClearNative()
         {
             this.services.Clear();
-            //this.context.Manager?.RemoveAllServices();
+            this.manager.RemoveAllServices();
         }
     }
 }

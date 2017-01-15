@@ -1,4 +1,4 @@
-# ACR BluetoothLE Server Plugin for Xamarin
+# ACR BluetoothLE GATT Server Plugin for Xamarin and Windows
 Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 [![NuGet](https://img.shields.io/nuget/v/Acr.Ble.Server.svg?maxAge=2592000)](https://www.nuget.org/packages/Acr.Ble.Server/)
@@ -10,11 +10,13 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 * Android 4.3+
 * iOS 8+
+* Windows UWP (15001+)
 
 
 ## FEATURES
 
-* Advertise Bluetooth services on iOS or Android device
+* Advertising
+    * Manufactuer Data
 * Charactertistics
     * Read
     * Write
@@ -79,7 +81,7 @@ characteristic.WhenWriteReceived().Subscribe(x =>
     // do something value
 });
 
-server.Start(new AdvertisementData
+await server.Start(new AdvertisementData
 {
     LocalName = "TestServer"
 });
@@ -106,10 +108,18 @@ _Add the following to your Info.plist_
 
 ```xml
 <array>
-<string>bluetooth-peripheral</string>
+    <string>bluetooth-peripheral</string>
 </array>
 ```
 
+### UWP
+_Add the following to your app manifest_
+
+```xml
+<Capabilities>
+    <DeviceCapability Name="bluetooth" />
+</Capabilities>
+```
 
 ## HOW TO USE
 

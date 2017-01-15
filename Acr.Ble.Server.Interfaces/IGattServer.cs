@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 
 namespace Acr.Ble.Server
 {
     public interface IGattServer : IDisposable
     {
+        //IBleAdapter Adapter { get; }
         IObservable<bool> WhenRunningChanged();
         bool IsRunning { get; }
-        void Start(AdvertisementData adData);
+        Task Start(AdvertisementData adData);
         void Stop();
 
         IGattService AddService(Guid uuid, bool primary);

@@ -1,5 +1,10 @@
 # CHANGE LOG
 
+## 2.0.0
+* [feature] UWP Support!
+* [feature] Advertise manufacturer data on Android and Windows
+* [breaking] Start is now async
+
 ## 1.2.0
 * [breaking] Broadcast is now a void again, BroadcastObserve is the observable version
 * [fix][ios] Write was not replying

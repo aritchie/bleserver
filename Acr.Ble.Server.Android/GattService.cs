@@ -6,7 +6,7 @@ using Java.Util;
 
 namespace Acr.Ble.Server
 {
-    public class GattService : AbstractGattService
+    public class GattService : AbstractGattService, IDroidGattService
     {
         public BluetoothGattService Native { get; }
         readonly GattContext context;

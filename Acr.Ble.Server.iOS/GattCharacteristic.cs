@@ -11,7 +11,7 @@ using Foundation;
 
 namespace Acr.Ble.Server
 {
-    public class GattCharacteristic : AbstractGattCharacteristic
+    public class GattCharacteristic : AbstractGattCharacteristic, IIosGattCharacteristic
     {
         readonly CBPeripheralManager manager;
         readonly IDictionary<NSUuid, IDevice> subscribers;

@@ -8,5 +8,8 @@ namespace Acr.Ble.Server
         AdapterStatus Status { get; }
         IObservable<AdapterStatus> WhenStatusChanged();
         IGattServer CreateGattServer();
+
+
+        bool IsAdvertisementManufacturerDataSupported { get; }
     }
 }

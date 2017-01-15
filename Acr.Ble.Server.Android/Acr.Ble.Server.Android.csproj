@@ -64,6 +64,8 @@
     <Compile Include="GattCharacteristic.cs" />
     <Compile Include="GattServer.cs" />
     <Compile Include="GattService.cs" />
+    <Compile Include="IDroidGattDescriptor.cs" />
+    <Compile Include="IDroidGattService.cs" />
     <Compile Include="Internals\AdvertisementCallbacks.cs" />
     <Compile Include="Internals\CharacteristicReadEventArgs.cs" />
     <Compile Include="Internals\CharacteristicWriteEventArgs.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Internals\GattRequestEventArgs.cs" />
     <Compile Include="Internals\GattEventArgs.cs" />
     <Compile Include="Internals\GattServerCallbacks.cs" />
+    <Compile Include="IDroidGattCharacteristic.cs" />
     <Compile Include="Internals\MtuChangedEventArgs.cs" />
     <Compile Include="Internals\WriteRequestEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

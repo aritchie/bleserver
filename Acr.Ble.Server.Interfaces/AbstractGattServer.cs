@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 
 namespace Acr.Ble.Server
@@ -42,7 +43,7 @@ namespace Acr.Ble.Server
 
         public abstract IObservable<bool> WhenRunningChanged();
         public abstract bool IsRunning { get; }
-        public abstract void Start(AdvertisementData adData);
+        public abstract Task Start(AdvertisementData adData);
         public abstract void Stop();
 
 
@@ -62,7 +63,7 @@ namespace Acr.Ble.Server
                         }));
                     }
                 }
-                return () => 
+                return () =>
                 {
                     foreach (var dispose in cleanup)
                         dispose.Dispose();
@@ -78,7 +79,7 @@ namespace Acr.Ble.Server
         public virtual IList<IDevice> GetAllSubscribedDevices()
         {
             var list = new Dictionary<Guid, IDevice>();
-            foreach (var s in this.Services) 
+            foreach (var s in this.Services)
             {
                 foreach (var ch in s.Characteristics)
                 {

@@ -66,10 +66,12 @@ namespace Acr.Ble.Server
         }
 
 
-
         public IGattServer CreateGattServer()
         {
             return new GattServer();
         }
+
+
+        public bool IsAdvertisementManufacturerDataSupported { get; } = true;
     }
 }

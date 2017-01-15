@@ -4,7 +4,7 @@ using CoreBluetooth;
 
 namespace Acr.Ble.Server
 {
-    public class GattService : AbstractGattService
+    public class GattService : AbstractGattService, IIosGattService
     {
         readonly CBPeripheralManager manager;
         public CBMutableService Native { get; }

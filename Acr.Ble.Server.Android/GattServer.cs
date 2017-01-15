@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 using Acr.Ble.Server.Internals;
 using Android.App;
 using Android.Bluetooth;
@@ -59,14 +60,15 @@ namespace Acr.Ble.Server
         }
 
 
-        public override void Start(AdvertisementData adData)
+        public override Task Start(AdvertisementData adData)
         {
             if (this.isRunning)
-                return;
+                return Task.CompletedTask;
 
             this.StartAdvertising(adData);
             this.StartGatt();
             this.isRunning = true;
+            return Task.CompletedTask;
         }
 
 
@@ -117,8 +119,8 @@ namespace Acr.Ble.Server
                 .SetIncludeDeviceName(true)
                 .SetIncludeTxPowerLevel(true);
 
-            if (adData.ManufacturerData != null)
-                data.AddManufacturerData(adData.ManufacturerData.CompanyId, adData.ManufacturerData.Data);
+            //if (adData.ManufacturerData != null)
+            //    data.AddManufacturerData(adData.ManufacturerData.CompanyId, adData.ManufacturerData.Data);
 
             foreach (var serviceUuid in adData.ServiceUuids)
             {
@@ -142,11 +144,11 @@ namespace Acr.Ble.Server
             this.server = this.manager.OpenGattServer(Application.Context, this.context.Callbacks);
             this.context.Server = this.server;
 
-            foreach (var service in this.Services.OfType<GattService>())
+            foreach (var service in this.Services.OfType<IDroidGattService>())
             {
-                foreach (var characteristic in service.Characteristics.OfType<GattCharacteristic>())
+                foreach (var characteristic in service.Characteristics.OfType<IDroidGattCharacteristic>())
                 {
-                    foreach (var descriptor in characteristic.Descriptors.OfType<GattDescriptor>())
+                    foreach (var descriptor in characteristic.Descriptors.OfType<IDroidGattDescriptor>())
                     {
                         characteristic.Native.AddDescriptor(descriptor.Native);
                     }

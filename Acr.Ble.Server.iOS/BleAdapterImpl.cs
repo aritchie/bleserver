@@ -61,5 +61,8 @@ namespace Acr.Ble.Server
         {
             return new GattServer(this.manager);
         }
+
+
+        public bool IsAdvertisementManufacturerDataSupported { get; } = false;
     }
 }
