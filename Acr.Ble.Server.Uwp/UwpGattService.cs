@@ -29,7 +29,6 @@ namespace Acr.Ble.Server
             if (this.native.Error != BluetoothError.Success)
                 throw new ArgumentException();
 
-            //result.ServiceProvider.StopAdvertising();
             foreach (var ch in this.Characteristics.OfType<IUwpGattCharacteristic>())
             {
                 await ch.Init(this.native.ServiceProvider.Service);
@@ -45,7 +44,7 @@ namespace Acr.Ble.Server
 
         public void Stop()
         {
-            this.native.ServiceProvider.StopAdvertising();
+            this.native?.ServiceProvider.StopAdvertising();
         }
     }
 }

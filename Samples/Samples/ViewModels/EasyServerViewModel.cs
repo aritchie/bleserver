@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Acr;
 using Acr.Ble.Server;
@@ -31,8 +30,8 @@ namespace Samples.ViewModels
                 .WhenStatusChanged()
                 .Subscribe(x => this.Status = x);
 
-            this.ToggleServer = ReactiveCommand.CreateFromTask(
-                _ =>
+            var cmd = ReactiveCommand.CreateFromTask(
+                async _ =>
                 {
                     this.BuildServer();
                     if (this.server.IsRunning)
@@ -41,18 +40,20 @@ namespace Samples.ViewModels
                     }
                     else
                     {
-                        this.server.Start(new AdvertisementData
+                        await this.server.Start(new AdvertisementData
                         {
                             LocalName = "TestServer"
                         });
                     }
-                    return Task.FromResult(new object());
                 },
                 this.WhenAny(
                     x => x.Status,
                     x => x.Value == AdapterStatus.PoweredOn
                 )
             );
+            cmd.ThrownExceptions.Subscribe(ex => this.dialogs.Alert(ex.ToString(), "ERROR"));
+
+            this.ToggleServer = cmd;
             this.Clear = new Command(() => this.Output = String.Empty);
         }
 
@@ -140,7 +141,7 @@ namespace Samples.ViewModels
                     this.OnEvent($"Characteristic Write Received - {write}");
                 });
 
-                server
+                this.server
                     .WhenRunningChanged()
                     .Catch<bool, ArgumentException>(ex =>
                     {
@@ -161,7 +162,7 @@ namespace Samples.ViewModels
 
                             this.ServerText = "Stop Server";
                             this.OnEvent("GATT Server Started");
-                            foreach (var s in server.Services)
+                            foreach (var s in this.server.Services)
                             {
                                 this.OnEvent($"Service {s.Uuid} Created");
                                 foreach (var ch in s.Characteristics)
@@ -172,7 +173,7 @@ namespace Samples.ViewModels
                         }
                     });
 
-                server
+                this.server
                     .WhenAnyCharacteristicSubscriptionChanged()
                     .Subscribe(x =>
                         this.OnEvent($"[WhenAnyCharacteristicSubscriptionChanged] UUID: {x.Characteristic.Uuid} - Device: {x.Device.Uuid} - Subscription: {x.IsSubscribing}")

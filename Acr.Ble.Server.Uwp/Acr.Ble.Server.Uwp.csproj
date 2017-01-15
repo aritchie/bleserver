@@ -108,7 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BleAdapterImpl.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GattServer.cs" />
+    <Compile Include="UwpDevice.cs" />
     <Compile Include="UwpGattCharacteristic.cs" />
     <Compile Include="UwpGattService.cs" />
     <Compile Include="IUwpGattCharacteristic.cs" />

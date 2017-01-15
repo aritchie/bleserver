@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Foundation;
@@ -86,19 +85,26 @@ namespace Acr.Ble.Server
 
         protected override IGattService CreateNative(Guid uuid, bool primary)
         {
-            throw new NotImplementedException();
+            return new UwpGattService(this, uuid, primary);
         }
 
 
         protected override void ClearNative()
         {
-            throw new NotImplementedException();
+            this.StopAll();
         }
 
 
         protected override void RemoveNative(IGattService service)
         {
-            throw new NotImplementedException();
+            ((IUwpGattService)service).Stop();
+        }
+
+
+        protected virtual void StopAll()
+        {
+            foreach (var service in this.Services.OfType<IUwpGattService>())
+                service.Stop();
         }
     }
 }

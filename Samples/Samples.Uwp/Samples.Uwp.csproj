@@ -11,8 +11,8 @@
     <AssemblyName>Samples.Uwp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.15003.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15003.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -131,9 +131,9 @@
       <Project>{ad886be2-6db2-424f-b173-fbfe0f117ba0}</Project>
       <Name>Acr.Ble.Server.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Acr.Ble.Server\Acr.Ble.Server.csproj">
-      <Project>{61470aac-e055-44d8-a649-2e0cfd8c28bd}</Project>
-      <Name>Acr.Ble.Server</Name>
+    <ProjectReference Include="..\..\Acr.Ble.Server.Uwp\Acr.Ble.Server.Uwp.csproj">
+      <Project>{c820a5c2-4323-459f-8db6-98fcf2051b17}</Project>
+      <Name>Acr.Ble.Server.Uwp</Name>
     </ProjectReference>
     <ProjectReference Include="..\Samples\Samples.csproj">
       <Project>{af0917dd-079a-49cb-9115-ba08340e4ed8}</Project>
