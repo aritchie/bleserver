@@ -10,6 +10,11 @@ namespace Acr.Ble.Server
         Guid Uuid { get; }
 
         /// <summary>
+        /// The negotiated MTU size with the remote device
+        /// </summary>
+        //ushort MtuSize { get; set; }
+
+        /// <summary>
         /// You can set any data you want here
         /// </summary>
         object Context { get; set; }
