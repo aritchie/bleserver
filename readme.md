@@ -8,6 +8,7 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 ## PLATFORMS
 
+* NET Standard
 * Android 4.3+
 * iOS 8+
 * Windows UWP (15001+)
@@ -17,6 +18,8 @@ Easy to use, cross platform, REACTIVE BluetoothLE Server Plugin for Xamarin
 
 * Advertising
     * Manufactuer Data
+    * Service UUIDs
+
 * Charactertistics
     * Read
     * Write
