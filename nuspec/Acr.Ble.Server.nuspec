@@ -14,15 +14,16 @@ PCL support for bluetooth low energy (BLE) gatt server
         <licenseUrl>https://github.com/aritchie/bluetoothle/LICENSE.md</licenseUrl>
         <projectUrl>https://github.com/aritchie/bleserver</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <tags>ios android windows xamarin xam.pcl server ble bluetooth gatt</tags>
+        <tags>ios android windows xamarin xam.pcl server ble bluetooth gatt rx reactive</tags>
         <dependencies>
-            <dependency id="rx-main" version="[2.2.5, 3)" />
+            <dependency id="rx-main" version="[3.1.1, 4)" />
         </dependencies>
         <releaseNotes>
 2.0
 [feature] UWP Support!
 [feature] Advertise manufacturer data on Android and Windows
 [breaking] Start is now async
+[breaking] Netstandard is here... no more PCL
 
 1.2.0
 [breaking] Broadcast is now a void again, BroadcastObserve is the observable version
