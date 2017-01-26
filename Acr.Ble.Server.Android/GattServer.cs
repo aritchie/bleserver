@@ -119,8 +119,8 @@ namespace Acr.Ble.Server
                 .SetIncludeDeviceName(true)
                 .SetIncludeTxPowerLevel(true);
 
-            //if (adData.ManufacturerData != null)
-            //    data.AddManufacturerData(adData.ManufacturerData.CompanyId, adData.ManufacturerData.Data);
+            if (adData.ManufacturerData != null)
+                data.AddManufacturerData(adData.ManufacturerData.CompanyId, adData.ManufacturerData.Data);
 
             foreach (var serviceUuid in adData.ServiceUuids)
             {

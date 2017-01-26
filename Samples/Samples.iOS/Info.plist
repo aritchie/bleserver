@@ -57,6 +57,6 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>I use bluetooth!</string>
 	<key>CFBundleName</key>
-	<string>BLE Server</string>
+	<string>ACR BLE Server</string>
 </dict>
 </plist>
