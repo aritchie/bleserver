@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3AD8B9A0-F1DC-443E-A45B-5F2FDECA4716}</ProjectGuid>
+    <ProjectGuid>{51A94EEB-A181-46D5-BD64-0D271B45C331}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Acr.Ble.Server.Mac</RootNamespace>
-    <AssemblyName>Acr.Ble.Server</AssemblyName>
+    <AssemblyName>Acr.Ble.Server.Mac</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
@@ -25,9 +25,8 @@
     <EnablePackageSigning>false</EnablePackageSigning>
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
-    <HttpClientHandler>HttpClientHandler</HttpClientHandler>
-    <TlsProvider>Default</TlsProvider>
-    <LinkMode>None</LinkMode>
+    <HttpClientHandler></HttpClientHandler>
+    <LinkMode></LinkMode>
     <XamMacArch></XamMacArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -41,18 +40,25 @@
     <EnablePackageSigning>false</EnablePackageSigning>
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>false</UseSGen>
-    <HttpClientHandler>HttpClientHandler</HttpClientHandler>
-    <TlsProvider>Default</TlsProvider>
-    <LinkMode>None</LinkMode>
+    <HttpClientHandler></HttpClientHandler>
+    <LinkMode></LinkMode>
     <XamMacArch></XamMacArch>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.Linq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\Acr.Ble.Server.Interfaces\Acr.Ble.Server.Interfaces.csproj">
+      <Project>{AD886BE2-6DB2-424F-B173-FBFE0F117BA0}</Project>
+      <Name>Acr.Ble.Server.Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Acr.Ble.Server.iOS\BleAdapterImpl.cs">
       <Link>BleAdapterImpl.cs</Link>
     </Compile>
@@ -74,13 +80,15 @@
     <Compile Include="..\Acr.Ble.Server.iOS\GattService.cs">
       <Link>GattService.cs</Link>
     </Compile>
+    <Compile Include="..\Acr.Ble.Server.iOS\IIosGattCharacteristic.cs">
+      <Link>IIosGattCharacteristic.cs</Link>
+    </Compile>
+    <Compile Include="..\Acr.Ble.Server.iOS\IIosGattDescriptor.cs">
+      <Link>IIosGattDescriptor.cs</Link>
+    </Compile>
+    <Compile Include="..\Acr.Ble.Server.iOS\IIosGattService.cs">
+      <Link>IIosGattService.cs</Link>
+    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Acr.Ble.Server.Interfaces\Acr.Ble.Server.Interfaces.csproj">
-      <Project>{AD886BE2-6DB2-424F-B173-FBFE0F117BA0}</Project>
-      <Name>Acr.Ble.Server.Interfaces</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="..\Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems" Label="Shared" Condition="Exists('..\Acr.Ble.Server.Shared\Acr.Ble.Server.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

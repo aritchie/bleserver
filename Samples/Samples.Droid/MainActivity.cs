@@ -13,7 +13,7 @@ using Xamarin.Forms.Platform.Android;
 namespace Samples.Droid
 {
     [Activity(
-        Label = "BLE Server",
+        Label = "ACR BLE Server",
         Icon = "@drawable/icon",
         MainLauncher = true,
         ScreenOrientation = ScreenOrientation.Portrait,

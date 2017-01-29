@@ -5,5 +5,5 @@
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<application android:label="BLE Server" android:icon="@drawable/icon" android:theme="@style/MyTheme"></application>
+	<application android:label="ACR  BLE Server" android:icon="@drawable/icon" android:theme="@style/MyTheme"></application>
 </manifest>
