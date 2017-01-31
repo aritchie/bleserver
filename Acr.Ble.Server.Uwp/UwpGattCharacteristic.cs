@@ -180,15 +180,15 @@ namespace Acr.Ble.Server
                 GattUuid.FromUuid(this.Uuid),
                 new GattLocalCharacteristicParameters
                 {
-                    // TODO
-                    CharacteristicProperties = GattCharacteristicProperties.Read | GattCharacteristicProperties.Write | GattCharacteristicProperties.Notify,
-                    ReadProtectionLevel = GattProtectionLevel.Plain,
-                    WriteProtectionLevel = GattProtectionLevel.Plain
-                    //PresentationFormats = new List<GattPresentationFormat>
-                    //{
-                    //    new GattPresentationFormat()
-                    //    //GattPresentationFormat.FromParts()
-                    //}
+                    CharacteristicProperties = this.ToNative(this.Properties),
+
+                    ReadProtectionLevel = this.Permissions.HasFlag(GattPermissions.ReadEncrypted)
+                        ? GattProtectionLevel.EncryptionAndAuthenticationRequired
+                        : GattProtectionLevel.Plain,
+
+                    WriteProtectionLevel =this.Permissions.HasFlag(GattPermissions.WriteEncrypted)
+                        ? GattProtectionLevel.EncryptionAndAuthenticationRequired
+                        : GattProtectionLevel.Plain,
                 }
             );
             foreach (var descriptor in this.Descriptors.OfType<IUwpGattDescriptor>())
@@ -197,6 +197,17 @@ namespace Acr.Ble.Server
             }
             this.native = ch.Characteristic;
             this.nativeReady.OnNext(ch.Characteristic);
+        }
+
+
+        protected GattCharacteristicProperties ToNative(CharacteristicProperties props)
+        {
+            var value = props
+                .ToString()
+                .Replace(CharacteristicProperties.NotifyEncryptionRequired.ToString(), String.Empty)
+                .Replace(CharacteristicProperties.IndicateEncryptionRequired.ToString(), String.Empty);
+
+            return (GattCharacteristicProperties)Enum.Parse(typeof(GattCharacteristicProperties), value);
         }
 
 

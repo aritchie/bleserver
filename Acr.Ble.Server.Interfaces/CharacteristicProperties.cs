@@ -41,4 +41,7 @@ namespace Acr.Ble.Server
         SignedWrite
         Write
         WriteNoResponse
+
+        //NotifyEncryptionRequired = 256, //0x100 //ReliableWrites = 256 UWP
+        //IndicateEncryptionRequired = 512 //WritableAuxiliaries = 512
 */
