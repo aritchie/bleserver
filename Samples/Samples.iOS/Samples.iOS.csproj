@@ -112,10 +112,6 @@
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
-    <ProjectReference Include="..\Samples\Samples.csproj">
-      <Name>Samples</Name>
-      <Project>{AF0917DD-079A-49CB-9115-BA08340E4ED8}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />

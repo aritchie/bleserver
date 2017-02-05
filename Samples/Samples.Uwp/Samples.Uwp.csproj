@@ -135,10 +135,6 @@
       <Project>{c820a5c2-4323-459f-8db6-98fcf2051b17}</Project>
       <Name>Acr.Ble.Server.Uwp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Samples\Samples.csproj">
-      <Project>{af0917dd-079a-49cb-9115-ba08340e4ed8}</Project>
-      <Name>Samples</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

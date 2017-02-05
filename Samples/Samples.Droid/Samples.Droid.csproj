@@ -193,10 +193,6 @@
       <Project>{ad886be2-6db2-424f-b173-fbfe0f117ba0}</Project>
       <Name>Acr.Ble.Server.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Samples\Samples.csproj">
-      <Name>Samples</Name>
-      <Project>{AF0917DD-079A-49CB-9115-BA08340E4ED8}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
