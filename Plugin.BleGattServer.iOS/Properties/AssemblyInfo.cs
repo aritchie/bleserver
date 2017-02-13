@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("Acr.Ble.Server.iOS")]
+[assembly: AssemblyTitle("Plugin.BleGattServer.iOS")]
 [assembly: AssemblyDescription("")]

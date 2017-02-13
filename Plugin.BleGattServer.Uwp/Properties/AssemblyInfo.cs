@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("Acr.Ble.Server.Uwp")]
+[assembly: AssemblyTitle("Plugin.BleGattServer.Uwp")]
 [assembly: AssemblyDescription("")]

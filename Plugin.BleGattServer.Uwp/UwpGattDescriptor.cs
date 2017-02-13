@@ -18,7 +18,7 @@ namespace Plugin.BleGattServer
         public async Task Init(GattLocalCharacteristic characteristic)
         {
             var result = await characteristic.CreateDescriptorAsync(
-                this.Uuid.ToNative(),
+                this.Uuid,
                 new GattLocalDescriptorParameters
                 {
                     ReadProtectionLevel = GattProtectionLevel.Plain,

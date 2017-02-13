@@ -11,12 +11,12 @@ namespace Plugin.BleGattServer
             throw new ArgumentException("[Acr.Ble.Server] No platform plugin found.  Did you install the nuget package in your app project as well?");
             #else
             return new BleAdapterImpl();
-            #endif            
+            #endif
         });
 
 
         static IBleAdapter instance;
-        public static IBleAdapter Current 
+        public static IBleAdapter Current
         {
             get { return instance ?? currentAdapter.Value; }
             set { instance = value; }

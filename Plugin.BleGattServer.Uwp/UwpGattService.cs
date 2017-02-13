@@ -25,7 +25,7 @@ namespace Plugin.BleGattServer
 
         public async Task Init()
         {
-            this.native = await GattServiceProvider.CreateAsync(GattUuid.FromUuid(this.Uuid));
+            this.native = await GattServiceProvider.CreateAsync(this.Uuid);
             if (this.native.Error != BluetoothError.Success)
                 throw new ArgumentException();
 
@@ -36,8 +36,8 @@ namespace Plugin.BleGattServer
 
             this.native.ServiceProvider.StartAdvertising(new GattServiceProviderAdvertisingParameters
             {
-                MakeConnectable = true
-                //MakeDiscoverable = true
+                IsConnectable = true,
+                IsDiscoverable = true
             });
         }
 

@@ -20,7 +20,10 @@ namespace Plugin.BleGattServer
         GattLocalCharacteristic native;
 
 
-        public UwpGattCharacteristic(IGattService service, Guid characteristicUuid, CharacteristicProperties properties, GattPermissions permissions) : base(service, characteristicUuid, properties, permissions)
+        public UwpGattCharacteristic(IGattService service,
+                                     Guid characteristicUuid,
+                                     CharacteristicProperties properties,
+                                     GattPermissions permissions) : base(service, characteristicUuid, properties, permissions)
         {
             this.nativeReady = new Subject<GattLocalCharacteristic>();
             this.connectedDevices = new List<IDevice>();
@@ -127,7 +130,7 @@ namespace Plugin.BleGattServer
 
                     if (respond)
                     {
-                        request.Complete(GattWriteResponse.Create());
+                        request.Respond();
                     }
                 });
                 var sub = this.nativeReady.Subscribe(dev => this.native.WriteRequested += handler);
@@ -156,8 +159,11 @@ namespace Plugin.BleGattServer
                     var dev = this.FindDevice(args.Session);
                     var read = new ReadRequest(dev, (int)request.Length);
                     ob.OnNext(read);
-                    //this.native.Value = read.Value.AsBuffer();
-                    // TODO: how to respond?
+
+                    if (read.Status == GattStatus.Success)
+                        request.RespondWithValue(read.Value.AsBuffer());
+                    else
+                        request.RespondWithProtocolError((byte) read.Status);
                 });
                 var sub = this.nativeReady.Subscribe(dev => this.native.ReadRequested += handler);
                 return () =>
@@ -177,7 +183,7 @@ namespace Plugin.BleGattServer
         public async Task Init(GattLocalService gatt)
         {
             var ch = await gatt.CreateCharacteristicAsync(
-                GattUuid.FromUuid(this.Uuid),
+                this.Uuid,
                 new GattLocalCharacteristicParameters
                 {
                     CharacteristicProperties = this.ToNative(this.Properties),
