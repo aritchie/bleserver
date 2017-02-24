@@ -2,7 +2,7 @@
 using System.Linq;
 
 
-namespace Samples
+namespace Sample
 {
     public static class Utils
     {

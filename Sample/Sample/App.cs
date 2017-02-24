@@ -1,9 +1,9 @@
 ﻿using System;
-using Samples.Pages.Server;
+using Sample.Pages;
 using Xamarin.Forms;
 
 
-namespace Samples
+namespace Sample
 {
     public class App : Application
     {

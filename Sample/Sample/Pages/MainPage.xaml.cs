@@ -2,7 +2,7 @@
 using Xamarin.Forms;
 
 
-namespace Samples.Pages.Server
+namespace Sample.Pages
 {
     public partial class MainPage : ContentPage
     {

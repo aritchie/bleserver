@@ -13,7 +13,7 @@ using Device = Xamarin.Forms.Device;
 using Command = Xamarin.Forms.Command;
 
 
-namespace Samples.ViewModels
+namespace Sample.ViewModels
 {
     [ImplementPropertyChanged]
     public class MainViewModel : INotifyPropertyChanged
