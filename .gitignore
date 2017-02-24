@@ -244,3 +244,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 Samples/Samples.Droid/Samples.Droid.csproj.bak
+Plugin.BleGattServer.Android/Plugin.BleGattServer.Android.csproj.bak
