@@ -8,7 +8,6 @@ using System.Windows.Input;
 using Acr.UserDialogs;
 using Plugin.BleGattServer;
 using PropertyChanged;
-using Xamarin.Forms;
 using Device = Xamarin.Forms.Device;
 using Command = Xamarin.Forms.Command;
 
@@ -28,12 +27,19 @@ namespace Sample.ViewModels
         {
             this.adapter = BleAdapter.Current;
             this.dialogs = UserDialogs.Instance;
-            adapter
+            this.adapter
                 .WhenStatusChanged()
                 .Subscribe(x => this.Status = x);
 
-            var cmd = new Command(
-                async _ =>
+            var cmd = new Command(async _ =>
+            {
+                if (this.adapter.Status != AdapterStatus.PoweredOn)
+                {
+                    this.dialogs.Alert("Could not start GATT Server.  Adapter Status: " + this.adapter.Status);
+                    return;
+                }
+
+                try
                 {
                     this.BuildServer();
                     if (this.server.IsRunning)
@@ -48,12 +54,12 @@ namespace Sample.ViewModels
                         });
                     }
                 }
-                //this.WhenAny(
-                //    x => x.Status,
-                //    x => x.Value == AdapterStatus.PoweredOn
-                //)
-            );
-            //cmd.ThrownExceptions.Subscribe(ex => this.dialogs.Alert(ex.ToString(), "ERROR"));
+
+                catch (Exception ex)
+                {
+                    this.dialogs.Alert(ex.ToString(), "ERROR");
+                }
+            });
 
             this.ToggleServer = cmd;
             this.Clear = new Command(() => this.Output = String.Empty);
@@ -203,6 +209,7 @@ namespace Sample.ViewModels
                 this.Output += msg + Environment.NewLine + Environment.NewLine
             );
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
