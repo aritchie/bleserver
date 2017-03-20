@@ -1,8 +1,86 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard1.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Plugin.BleGattServer.Abstractions\Plugin.BleGattServer.Abstractions.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <!--<TargetFrameworks>netstandard1.0;portable-win+net45+wp8+win8+wpa81;monoandroid70;xamarinios;xamarintvos;xamarinmac</TargetFrameworks>-->
+        <TargetFrameworks>netstandard1.0;monoandroid70;Xamarin.iOS10;uap10.0</TargetFrameworks>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <Authors>Allan Ritchie</Authors>
+        <PackageLicenseUrl>https://github.com/aritchie/bleserver/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/aritchie/bleserver</PackageProjectUrl>
+        <MinClientVersion>2.12</MinClientVersion>
+        <Description>
+PCL support for bluetooth low energy (BLE) gatt server
+
+Supported Platforms
+Android 4.3+
+iOS 7+
+tvOS
+macOS
+Windows UWP
+        </Description>
+        <Copyright>© Allan Ritchie 2017</Copyright>
+        <PackageTags>ios;android;uwp;windows;tvos;mac;macos;xamarin;rx;reactive;ble;bluetooth;bluetoothle;acr</PackageTags>
+        <Product>Plugin.BleGattServer ($(TargetFramework))</Product>
+        <IncludeSymbols>true</IncludeSymbols>
+        <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+        <!--<GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>-->
+        <DebugType>full</DebugType>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <PackageReleaseNotes>
+        </PackageReleaseNotes>
+        <PackageIconUrl>https://github.com/aritchie/bleserver/raw/master/icon.png</PackageIconUrl>
+        <Company />
+        <Version>2.0.0-beta3</Version>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+        <TargetPlatformVersion>10.0.15060.0</TargetPlatformVersion>
+        <TargetPlatformMinVersion>10.0.15001.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' OR '$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8' ">
+        <DefineConstants>$(DefineConstants);BAIT</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Platforms\**\*.*" />
+        <None Include="Platforms\**\*.*" />
+        <EmbeddedResource Include="Properties\Plugin.BleGattServer.rd.xml" />
+        <PackageReference Include="MSBuild.Sdk.Extras" Version="1.0.0" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
+        <PackageReference Include="System.Reactive" Version="3.1.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
+        <Compile Include="Platforms\Apple\**\*.cs" />
+        <PackageReference Include="System.Reactive" Version="3.1.1" />
+
+        <Reference Include="System" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.iOS" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '($TargetFramework)' == 'Xamarin.Mac' ">
+        <Compile Include="Platforms\Apple\**\*.cs" />
+        <PackageReference Include="System.Reactive" Version="3.1.1" />
+
+        <Reference Include="System" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.Mac" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'monoandroid70' ">
+        <Compile Include="Platforms\Android\**\*.cs" />
+        <PackageReference Include="System.Reactive" Version="3.1.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+        <Compile Include="Platforms\Uwp\**\*.cs" />
+        <PackageReference Include="System.Reactive" Version="3.1.1" />
+        <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.3.1" />
+    </ItemGroup>
+    <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

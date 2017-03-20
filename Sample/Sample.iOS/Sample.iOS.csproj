@@ -164,18 +164,6 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Plugin.BleGattServer.Abstractions\Plugin.BleGattServer.Abstractions.csproj">
-      <Project>{e098d7af-fc4f-44b3-9524-0db33473c7ad}</Project>
-      <Name>Plugin.BleGattServer.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugin.BleGattServer.iOS\Plugin.BleGattServer.iOS.csproj">
-      <Project>{e84a8278-60cc-4b21-8326-b1a0ec3d1801}</Project>
-      <Name>Plugin.BleGattServer.iOS</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="..\Sample\Sample.projitems" Label="Shared" Condition="Exists('..\Sample\Sample.projitems')" />

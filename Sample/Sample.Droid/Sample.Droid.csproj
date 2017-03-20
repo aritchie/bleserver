@@ -167,16 +167,6 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Plugin.BleGattServer.Abstractions\Plugin.BleGattServer.Abstractions.csproj">
-      <Project>{e098d7af-fc4f-44b3-9524-0db33473c7ad}</Project>
-      <Name>Plugin.BleGattServer.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Plugin.BleGattServer.Android\Plugin.BleGattServer.Android.csproj">
-      <Project>{be07d63b-c90d-4fcf-9391-001d2406ce45}</Project>
-      <Name>Plugin.BleGattServer.Android</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="..\Sample\Sample.projitems" Label="Shared" Condition="Exists('..\Sample\Sample.projitems')" />
