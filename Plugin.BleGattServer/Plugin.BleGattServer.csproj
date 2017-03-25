@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <!--<TargetFrameworks>netstandard1.0;portable-win+net45+wp8+win8+wpa81;monoandroid70;xamarinios;xamarintvos;xamarinmac</TargetFrameworks>-->
-        <TargetFrameworks>netstandard1.0;monoandroid70;Xamarin.iOS10;uap10.0</TargetFrameworks>
+        <!--<TargetFrameworks>netstandard1.0;portable-net45+win8+wpa81+wp8;monoandroid70;xamarinios;xamarintvos;xamarinmac</TargetFrameworks>-->
+        <TargetFrameworks>netstandard1.0;monoandroid70;Xamarin.iOS10;uap10.0;xamarintvos</TargetFrameworks>
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
         <Authors>Allan Ritchie</Authors>
         <PackageLicenseUrl>https://github.com/aritchie/bleserver/blob/master/LICENSE.md</PackageLicenseUrl>
